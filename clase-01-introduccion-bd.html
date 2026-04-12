@@ -1,0 +1,384 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introducción a Bases de Datos</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-01-introduccion-bd.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNTY3MjUz" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn next" href="clase-02-tablas-relaciones-normalizacion.html">Siguiente clase &rarr;</a>
+
+<div class="container">
+
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server · Clase interactiva</div>
+  <h1>Introducción a<br><em>Bases de Datos</em></h1>
+  <p class="subtitle">Primera parte del recorrido: concepto de base de datos, tipos de bases de datos y explicaci&oacute;n del SGBD como software que organiza, protege y administra la informaci&oacute;n.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:20%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active"  onclick="showTab('concepto',0)">Concepto</button>
+  <button class="nav-btn"         onclick="showTab('tipos',1)">Tipos</button>
+  <button class="nav-btn"         onclick="showTab('sgbd',2)">Motor de Base de datos (SGBD)</button>
+  <button class="nav-btn"         onclick="showTab('ssms',3)">SQL Server Management Studio</button>
+  <button class="nav-btn"         onclick="showTab('quiz',4)">Quiz</button>
+</nav>
+
+<!-- TAB 1 - CONCEPTO -->
+<div class="section active" id="tab-concepto">
+  <h2>¿Qué es una Base de Datos?</h2>
+  <p class="section-intro">Una base de datos es una colección de datos relacionados entre sí, con un sentido específico, que representan algún aspecto del mundo real y están organizados para ser consultados y actualizados de forma eficiente.</p>
+
+  <div class="concepto">
+    La palabra clave es <strong>organización</strong>. No alcanza con guardar datos: los datos tienen que poder encontrarse, relacionarse y mantenerse consistentes con el tiempo. Una base de datos bien diseñada hace posible todo eso.
+  </div>
+
+  <div class="intro-grid">
+    <div class="intro-card" style="--card-color:#2d6a4f" onclick="showTab('tipos',1)">
+      <div class="card-num">01</div>
+      <h3>Tipos de BD</h3>
+      <p>Relacionales vs. NoSQL. Cuándo usar cada una.</p>
+    </div>
+    <div class="intro-card" style="--card-color:#1d4ed8" onclick="showTab('sgbd',2)">
+      <div class="card-num">02</div>
+      <h3>Motor de Bases de Datos - (SGBD)</h3>
+      <p>El software que gestiona la base de datos. Funciones clave.</p>
+    </div>
+    <div class="intro-card" style="--card-color:#92400e" onclick="location.href='#ssms-def'; showTab('ssms',3)">
+      <div class="card-num">03</div>
+      <h3>SQL Server Management Studio</h3>
+      <p>La herramienta que vamos a usar para escribir consultas, crear bases y trabajar con SQL Server.</p>
+    </div>
+  </div>
+
+  <hr>
+  <h3>El problema que resuelven</h3>
+  <p style="color:var(--text2);font-size:14px;margin-bottom:20px;line-height:1.7">Antes de las bases de datos, la información se guardaba en archivos planos, planillas u hojas de cálculo. A medida que los datos crecen, esos formatos empiezan a fallar:</p>
+
+  <div class="compare-grid">
+    <div class="compare-card bad">
+      <div class="compare-header">Sin base de datos</div>
+      <ul>
+        <li>Datos repetidos en múltiples archivos</li>
+        <li>Sin control: cualquiera edita cualquier cosa</li>
+        <li>Inconsistencias entre registros: "Juan Pérez" y "Juan Perez" como personas distintas</li>
+        <li>Búsquedas lentas</li>
+        <li>Riesgo de pérdida de información</li>
+      </ul>
+    </div>
+    <div class="compare-card good">
+      <div class="compare-header">Con base de datos</div>
+      <ul>
+        <li>Dato único, almacenado una sola vez</li>
+        <li>Control de acceso por usuarios y permisos</li>
+        <li>Integridad garantizada por reglas</li>
+        <li>Consultas más rápidas y ordenadas</li>
+        <li>Transacciones y backups para recuperación</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>Ejemplos cotidianos de bases de datos: el sistema de alumnos de un colegio, el inventario de un almacén, las cuentas de un banco, el catálogo de una biblioteca digital o una app de turnos médicos.</div>
+  </div>
+</div>
+
+<!-- TAB 2 - TIPOS -->
+<div class="section" id="tab-tipos">
+  <h2>Tipos de Bases de Datos</h2>
+  <p class="section-intro">Existen distintos modelos para organizar y almacenar datos. Los dos grandes grupos hoy en día son las bases de datos <strong>relacionales (SQL)</strong> y las <strong>no relacionales (NoSQL)</strong>.</p>
+
+  <div class="compare-grid">
+    <div class="compare-card sql">
+      <div class="compare-header">Relacionales (SQL)</div>
+      <ul>
+		<li>Diseñadas en los años 70. El modelo más maduro.</li>
+        <li>Datos organizados en <strong>tablas</strong> con filas y columnas.</li>
+        <li>Las tablas se relacionan entre sí mediante claves.</li>
+		<li>Escalan verticalmente (más potencia en un solo servidor (CPU, RAM)</li>
+        <li>Garantizan integridad <strong>ACID</strong>.</li>
+        <li>Se consultan con <strong>SQL</strong> (Lenguaje de Consulta Estructurado).</li>
+        <li>Ideales para sistemas financieros, ERP, CRM.</li>
+        <li>Ejemplos: <strong>SQL Server, MySQL, PostgreSQL, Oracle</strong>.</li>  
+      </ul>
+    </div>
+    <div class="compare-card nosql">
+      <div class="compare-header">No relacionales (NoSQL)</div>
+      <ul>
+		<li>Surgieron con la explosión de aplicaciones web complejas.<li>
+        <li>Modelos flexibles: documentos, clave-valor, grafos y columnas</li>
+        <li>No requieren un esquema fijo: cada registro puede tener estructura distinta.</li>
+        <li>Escalan horizontalmente (más servidores, no más potencia)</li>
+		<li>Sacrifican integridad en pos de la velocidad.</li>
+        <li>Se usan mucho en big data, redes sociales e IoT</li>
+        <li>Ejemplos: MongoDB, Redis, Cassandra, DynamoDB</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr>
+ 
+  <p style="margin:-2px 0 18px"><a class="inline-link" href="#acid-def">Referencia rápida: qué es ACID</a></p>
+
+  <div class="acid-box" id="acid-def">
+    <h3>¿Qué es ACID?</h3>
+    <p>ACID (Atomicidad, Consistencia, Aislamiento y Durabilidad) es una forma de asegurar que una <a class="inline-link" href="#transaccion-def">transacción</a> sea confiable. Dicho fácil: una operación importante se guarda completa y bien, o directamente no se guarda.</p>
+    <ul class="acid-list">
+      <li><strong>A - Atomicidad (Atomicity):</strong> todo o nada. Si una parte falla, toda la operación se revierte y nada se aplica.</li>
+      <li><strong>C - Consistencia (Consistency):</strong> los datos deben seguir siendo correctos. Garantiza que la base de datos pase de un estado válido a otro, cumpliendo todas las reglas y restricciones</li>
+      <li><strong>I - Aislamiento (Isolation):</strong> garantiza que las transacciones simultáneas no interfieran entre sí, evitando lecturas de datos erroneas.</li>
+      <li><strong>D - Durabilidad (Durability):</strong> una vez guardado, el cambio no se pierde.</li>
+    </ul>
+    <div class="acid-note" id="transaccion-def">
+      <h4>¿Qué es una transacción?</h4>
+      <p>Una transacción en una base de datos es una unidad lógica de trabajo que agrupa una o varias operaciones, como leer, insertar, actualizar o borrar datos. Garantiza que todas las acciones se ejecuten exitosamente o ninguna lo haga.</p>
+      <p><strong>Ejemplo:</strong> una transferencia bancaria de $100 de la cuenta A a la cuenta B implica dos acciones: reducir $100 en A y aumentar $100 en B. Si el sistema falla después de reducir en A pero antes de aumentar en B, la transacción se revierte para evitar la pérdida de dinero.</p>
+    </div>
+  </div>
+  
+	 <h3>Comparativa detallada</h3>
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Factor</th>
+        <th>Relacionales (SQL)</th>
+        <th>No relacionales (NoSQL)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Estructura</td>
+        <td>Tablas con esquema predefinido</td>
+        <td>Documentos, grafos, clave-valor, columnas</td>
+      </tr>
+      <tr>
+        <td>Esquema</td>
+        <td>Fijo - columnas definidas antes de insertar datos</td>
+        <td>Dinámico - puede variar entre registros</td>
+      </tr>
+      <tr>
+        <td>Escalabilidad</td>
+        <td>Vertical</td>
+        <td>Horizontal</td>
+      </tr>
+      <tr>
+        <td>Consistencia</td>
+        <td>Fuerte (ACID completo)</td>
+        <td>Eventual</td>
+      </tr>
+      <tr>
+        <td>Consultas complejas</td>
+        <td>Muy eficiente con JOINs y subconsultas</td>
+        <td>Limitado - las uniones son difíciles</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip warn">
+    <span class="tip-icon"></span>
+    <div>En esta materia trabajamos con bases de datos <strong>relacionales</strong> usando SQL Server, porque es un modelo ideal para aprender fundamentos sólidos de diseño y consulta.</div>
+  </div>
+</div>
+
+<!-- TAB 3 - SGBD -->
+<div class="section" id="tab-sgbd">
+  <h2>Sistema Gestor de Bases de Datos (SGBD)</h2>
+  <p class="section-intro">Un SGBD (o DBMS, por sus siglas en inglés) es el software intermediario entre el usuario y los datos. Nadie accede directamente a los archivos en disco: todo pasa por el SGBD, que controla, organiza y protege la información.</p>
+
+  <div class="concepto">
+    Pensalo como el <strong>encargado de un depósito</strong>. Vos pedís una caja, él la busca, te la trae, registra quién la pidió, controla que la devuelvas bien, y se asegura de que dos personas no agarren la misma caja al mismo tiempo. Eso hace el SGBD con los datos.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li>
+          <div class="step-num">1</div>
+          <div><strong>Definición de datos:</strong> permite crear y modificar la estructura (tablas, columnas, tipos de dato, restricciones) mediante el lenguaje DDL (<em>Data Definition Language</em>).</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div><strong>Manipulación de datos:</strong> permite insertar, consultar, modificar y eliminar datos mediante el lenguaje DML (<em>Data Manipulation Language</em>): <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>.</div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div><strong>Control de acceso:</strong> gestiona usuarios, roles y permisos. Define quién puede leer, escribir o administrar cada parte de la base de datos.</div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div><strong>Integridad:</strong> aplica reglas (claves primarias, foráneas, restricciones) para que los datos sean siempre correctos y consistentes.</div>
+        </li>
+        <li>
+          <div class="step-num">5</div>
+          <div><strong>Concurrencia:</strong> permite que múltiples usuarios trabajen al mismo tiempo sin que se pisen entre sí (bloqueos y transacciones).</div>
+        </li>
+        <li>
+          <div class="step-num">6</div>
+          <div><strong>Recuperación:</strong> ante una falla (corte de luz, error de hardware), el SGBD puede restaurar la base de datos a un estado consistente usando logs de transacciones y backups.</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+	<h3>Ejemplos de SGBD relacionales</h3>
+
+  <table class="big-table">
+    <thead>
+      <tr><th>SGBD</th><th>Empresa</th><th>Característica principal</th><th>Uso típico</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>SQL Server</td>
+        <td>Microsoft</td>
+        <td>Integración con ecosistema Windows y .NET</td>
+        <td>Empresas medianas y grandes, ERP</td>
+      </tr>
+      <tr>
+        <td>MySQL</td>
+        <td>Oracle (open source)</td>
+        <td>Muy popular en aplicaciones web</td>
+        <td>Sitios web, WordPress, PHP</td>
+      </tr>
+      <tr>
+        <td>PostgreSQL</td>
+        <td>Comunidad (open source)</td>
+        <td>Altamente estándar, extensible</td>
+        <td>Aplicaciones complejas, GIS</td>
+      </tr>
+      <tr>
+        <td>Oracle DB</td>
+        <td>Oracle</td>
+        <td>Muy robusto para alta disponibilidad</td>
+        <td>Bancos, telecomunicaciones</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="tip success">
+    <span class="tip-icon"></span>
+    <div>En esta materia usamos <strong>SQL Server</strong>. La herramienta visual más habitual es <strong>SSMS</strong> (SQL Server Management Studio).</div>
+  </div>
+
+  <div class="concepto" id="ssms-def">
+    <strong>SQL Server Management Studio (SSMS)</strong> es el programa que usamos para trabajar con SQL Server de forma visual. Desde ah&iacute; podemos conectarnos al servidor, crear bases de datos y tablas, escribir consultas SQL, ejecutar comandos, ver resultados y administrar objetos de la base.
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>En la pr&aacute;ctica, SSMS va a ser nuestro entorno de trabajo: all&iacute; vamos a escribir <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code> y <code>DELETE</code>, crear estructuras y probar lo que vayamos viendo en clase.</div>
+  </div>
+</div>
+
+<!-- TAB 4 - SSMS -->
+<div class="section" id="tab-ssms">
+  <h2>SQL Server Management Studio (SSMS)</h2>
+  <p class="section-intro"><strong>SQL Server Management Studio
+(SSMS)</strong> es un entorno integrado gratuito de Microsoft para administrar, configurar y desarrollar cualquier infraestructura de SQL, desde SQL Server hasta Azure SQL Database. Proporciona herramientas gráficas y editores de scripts para gestionar bases de datos, ejecutar consultas T-SQL y automatizar tareas.</p>
+
+  <div class="concepto">
+    SSMS es una aplicación independiente del motor de base de datos y se debe descargar e instalar por separado. Es compatible con Windows y se actualiza periódicamente para mejorar la compatibilidad con las últimas características de SQL Server.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li>
+          <div class="step-num">1</div>
+          <div><strong>Gestión Integral:</strong> Permite administrar, configurar y desarrollar componentes del motor de base de datos SQL Server y Azure SQL.</div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div><strong>Interfaz Gráfica (GUI):</strong> Incluye un Explorador de Objetos para visualizar y gestionar bases de datos, tablas y demas objetos de una base de datos.</div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div><strong>Editor de Consultas:</strong> Potente editor para escribir, depurar y ejecutar codigo Transact-SQL (T-SQL).</div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div><strong>Integraciones Modernas (versiones recientes):</strong> Las versiones nuevas (como SSMS 21) incluyen temas oscuros, integraciones con Git para control de versiones y soporte para IA a través de Azure Open AI.</div>
+        </li>
+        <li>
+          <div class="step-num">5</div>
+          <div><strong>Conectividad:</strong> Se conecta a instancias locales de SQL Server, SQL Server en máquinas virtuales de Azure y Azure SQL Database.</div>
+        </li>
+        <li>
+          <div class="step-num">6</div>
+          <div><strong>Automatización:</strong> Permite guardar scripts para ejecuciones posteriores y generar informes de configuración.</div>
+        </li>
+      </ul>
+
+      <div class="ssms-shot-grid">
+        <button class="ssms-shot-card" type="button" onclick="openImageModal('assets/ssms_19.jpg', 'SSMS 19')">
+          <img src="assets/ssms_19.jpg" alt="Interfaz de SQL Server Management Studio 19">
+          <div class="ssms-shot-caption">
+            <strong>SSMS 19</strong>
+            Interfaz cl&aacute;sica con Explorador de Objetos a la izquierda y el &aacute;rea principal lista para abrir consultas.
+          </div>
+        </button>
+        <button class="ssms-shot-card" type="button" onclick="openImageModal('assets/ssms_22.jpg', 'SSMS 22')">
+          <img src="assets/ssms_22.jpg" alt="Interfaz de SQL Server Management Studio 22">
+          <div class="ssms-shot-caption">
+            <strong>SSMS 22</strong>
+            Versi&oacute;n m&aacute;s moderna, con tema oscuro y nuevas integraciones, pero manteniendo la misma l&oacute;gica de trabajo.
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tip info">
+  <span class="tip-icon"></span>
+  <div>Con estos conceptos ya ten&eacute;s la base para seguir con el dise&ntilde;o relacional. La segunda parte trabaja <strong>tablas, relaciones y normalizaci&oacute;n</strong>.</div>
+</div>
+
+<p style="margin-top:18px">
+  <a class="inline-link" href="clase-02-tablas-relaciones-normalizacion.html">Ir a la segunda parte: Tablas, Relaciones y Normalizaci&oacute;n</a>
+</p>
+<div class="section" id="tab-quiz">
+  <h2>Quiz de Repaso</h2>
+  <p class="section-intro">Respond&eacute; estas preguntas para comprobar si te quedaron claros los conceptos b&aacute;sicos de la clase. Al finalizar vas a ver tu puntaje total.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div class="score-num" id="score-num">0/0</div>
+    <div class="score-label" id="score-label">Resultado final</div>
+    <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+</div><!-- /container -->
+
+<footer>
+  <div class="container">
+    Bases de Datos · 2do. Año· Tecnicatura Superior en Análisis, Desarrollo y Programación de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formación Docente y Técnica N° 43 · Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+<div class="image-modal" id="image-modal" aria-hidden="true" onclick="closeImageModal()">
+  <div class="image-modal-dialog" onclick="event.stopPropagation()">
+    <div class="image-modal-top">
+      <div class="image-modal-title" id="image-modal-title">Vista ampliada</div>
+      <button class="image-modal-close" type="button" aria-label="Cerrar imagen" onclick="closeImageModal()">&times;</button>
+    </div>
+    <div class="image-modal-body">
+      <img id="image-modal-img" src="" alt="">
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script src="js/clase-01-introduccion-bd.js"></script>
+
+</body>
+</html>
+

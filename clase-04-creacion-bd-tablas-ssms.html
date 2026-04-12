@@ -1,0 +1,200 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creaci&oacute;n de Bases y Tablas en SSMS</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-04-creacion-bd-tablas-ssms.css">
+</head>
+<body>
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNTY3MjUz" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-03-tipos-datos-sql-server.html">&larr; Clase anterior</a>
+
+<div class="container">
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server &middot; Clase interactiva</div>
+  <h1>Creaci&oacute;n de Bases<br><em>y Tablas en SSMS</em></h1>
+  <p class="subtitle">Paso a paso para crear una base de datos y una tabla usando la interfaz gr&aacute;fica de SQL Server Management Studio, con capturas de referencia para acompa&ntilde;ar la pr&aacute;ctica.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:17%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('base',0)">Nueva Base</button>
+  <button class="nav-btn" onclick="showTab('tabla',1)">Nueva Tabla</button>
+  <button class="nav-btn" onclick="showTab('columnas',2)">Columnas</button>
+  <button class="nav-btn" onclick="showTab('identidad',3)">Identidad y PK</button>
+  <button class="nav-btn" onclick="showTab('guardar',4)">Guardar</button>
+  <button class="nav-btn" onclick="showTab('quiz',5)">Quiz</button>
+</nav>
+
+<div class="section active" id="tab-base">
+  <h2>Crear una Base de Datos</h2>
+  <p class="section-intro">Desde el Explorador de objetos de SSMS se puede crear una base nueva usando el men&uacute; contextual, sin necesidad de escribir instrucciones SQL.</p>
+  <div class="concepto">Primero hay que estar conectado a una instancia del Motor de base de datos de SQL Server. Luego se trabaja sobre el nodo <strong>Bases de datos</strong>.</div>
+  <div class="content-card">
+    <div class="content-card-header">Secuencia general</div>
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li><div class="step-num">1</div><div>En el Explorador de objetos, expandir la instancia de SQL Server.</div></li>
+        <li><div class="step-num">2</div><div>Hacer clic derecho sobre <strong>Bases de datos</strong>.</div></li>
+        <li><div class="step-num">3</div><div>Elegir la opci&oacute;n <strong>Nueva base de datos</strong>.</div></li>
+        <li><div class="step-num">4</div><div>Escribir el nombre de la base y aceptar.</div></li>
+      </ul>
+      <div class="shot-grid">
+        <button class="shot-card" type="button" onclick="openImageModal('assets/creacion_ssms/paso1.jpg','Nueva base de datos - men&uacute; contextual')">
+          <img src="assets/creacion_ssms/paso1.jpg" alt="Men&uacute; contextual para crear base de datos">
+          <div class="shot-caption"><strong>Paso 1</strong>Clic derecho sobre <em>Bases de datos</em> y elegir <em>Nueva base de datos</em>.</div>
+        </button>
+        <button class="shot-card" type="button" onclick="openImageModal('assets/creacion_ssms/paso2.jpg','Nueva base de datos - nombre')">
+          <img src="assets/creacion_ssms/paso2.jpg" alt="Ventana nueva base de datos en SSMS">
+          <div class="shot-caption"><strong>Paso 2</strong>Ingresar el nombre de la base y confirmar con <em>Aceptar</em>.</div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="tab-tabla">
+  <h2>Crear una Nueva Tabla</h2>
+  <p class="section-intro">Una vez creada la base, el siguiente paso es ir al nodo <strong>Tablas</strong> y abrir el dise&ntilde;ador de tabla.</p>
+  <div class="tip info"><span class="tip-icon"></span><div>Primero expand&iacute; la base que acab&aacute;s de crear, luego expand&iacute; <strong>Tablas</strong>.</div></div>
+  <div class="content-card">
+    <div class="content-card-header">Desde el Explorador de objetos</div>
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li><div class="step-num">1</div><div>Expandir la base de datos creada.</div></li>
+        <li><div class="step-num">2</div><div>Hacer clic derecho sobre el nodo <strong>Tablas</strong>.</div></li>
+        <li><div class="step-num">3</div><div>Elegir <strong>Nueva</strong> y luego <strong>Tabla...</strong>.</div></li>
+      </ul>
+      <div class="shot-grid">
+        <button class="shot-card" type="button" onclick="openImageModal('assets/creacion_ssms/paso3.jpg','Nueva tabla desde SSMS')">
+          <img src="assets/creacion_ssms/paso3.jpg" alt="Nueva tabla desde el nodo Tablas">
+          <div class="shot-caption"><strong>Referencia visual</strong>Desde el nodo <em>Tablas</em> se abre el dise&ntilde;ador con la opci&oacute;n <em>Tabla...</em>.</div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="tab-columnas">
+  <h2>Definir Columnas y Tipos de Datos</h2>
+  <p class="section-intro">En el dise&ntilde;ador de tablas se escriben los nombres de columna, se elige el tipo de dato y se indica si cada campo permitir&aacute; valores <code>NULL</code>.</p>
+  <div class="content-card">
+    <div class="content-card-header">Qu&eacute; hay que completar</div>
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li><div class="step-num">1</div><div>Nombre de columna.</div></li>
+        <li><div class="step-num">2</div><div>Tipo de datos adecuado para cada campo.</div></li>
+        <li><div class="step-num">3</div><div>Definir si se permiten o no valores nulos.</div></li>
+        <li><div class="step-num">4</div><div>Si hace falta, usar el panel inferior de propiedades para configurar opciones adicionales.</div></li>
+      </ul>
+      <div class="shot-grid">
+        <button class="shot-card" type="button" onclick="openImageModal('assets/creacion_ssms/paso4.jpg','Dise&ntilde;ador de tabla - columnas')">
+          <img src="assets/creacion_ssms/paso4.jpg" alt="Dise&ntilde;ador de tablas con columnas">
+          <div class="shot-caption"><strong>Dise&ntilde;ador</strong>Carga de columnas, tipos de datos y permiso de valores nulos.</div>
+        </button>
+        <button class="shot-card" type="button" onclick="openImageModal('assets/creacion_ssms/paso5.jpg','Propiedades de columna')">
+          <img src="assets/creacion_ssms/paso5.jpg" alt="Propiedades de columna en SSMS">
+          <div class="shot-caption"><strong>Propiedades</strong>En el panel inferior se configuran opciones adicionales para la columna seleccionada.</div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="tab-identidad">
+  <h2>Identidad y Clave Primaria</h2>
+  <p class="section-intro">Es muy com&uacute;n que una columna entera sea autonum&eacute;rica y funcione como clave principal de la tabla.</p>
+  <div class="concepto">Para que una columna sea autonum&eacute;rica, primero debe ser de tipo <strong>INT</strong>. Luego, en las propiedades de columna, se habilita la <strong>Especificaci&oacute;n de identidad</strong> poniendo <strong>(Identidad) = S&iacute;</strong>.</div>
+  <div class="content-card">
+    <div class="content-card-header">Pasos recomendados</div>
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li><div class="step-num">1</div><div>Seleccionar la columna de tipo entero.</div></li>
+        <li><div class="step-num">2</div><div>En <strong>Especificaci&oacute;n de identidad</strong>, indicar <strong>S&iacute;</strong>.</div></li>
+        <li><div class="step-num">3</div><div>Hacer clic derecho sobre la columna y elegir <strong>Establecer clave principal</strong>.</div></li>
+      </ul>
+      <div class="shot-grid">
+        <button class="shot-card" type="button" onclick="openImageModal('assets/creacion_ssms/paso6.jpg','Especificaci&oacute;n de identidad')">
+          <img src="assets/creacion_ssms/paso6.jpg" alt="Configuraci&oacute;n de identidad en propiedades de columna">
+          <div class="shot-caption"><strong>Autonum&eacute;rico</strong>Activar la propiedad <em>(Identidad)</em> dentro de <em>Especificaci&oacute;n de identidad</em>.</div>
+        </button>
+        <button class="shot-card" type="button" onclick="openImageModal('assets/creacion_ssms/paso7.jpg','Establecer clave principal')">
+          <img src="assets/creacion_ssms/paso7.jpg" alt="Establecer clave principal en SSMS">
+          <div class="shot-caption"><strong>Clave primaria</strong>Clic derecho sobre la columna y seleccionar <em>Establecer clave principal</em>.</div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="tab-guardar">
+  <h2>Guardar la Tabla</h2>
+  <p class="section-intro">Cuando la estructura ya est&aacute; definida, se guarda la tabla desde el men&uacute; Archivo y se indica el nombre final.</p>
+  <div class="tip success"><span class="tip-icon"></span><div>Este paso crea definitivamente la tabla dentro de la base elegida.</div></div>
+  <div class="content-card">
+    <div class="content-card-header">Cierre del proceso</div>
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li><div class="step-num">1</div><div>Ir a <strong>Archivo &gt; Guardar tabla</strong>.</div></li>
+        <li><div class="step-num">2</div><div>Escribir el nombre de la tabla.</div></li>
+        <li><div class="step-num">3</div><div>Confirmar con <strong>Aceptar</strong>.</div></li>
+      </ul>
+      <div class="shot-grid">
+        <button class="shot-card" type="button" onclick="openImageModal('assets/creacion_ssms/paso8.jpg','Guardar tabla')">
+          <img src="assets/creacion_ssms/paso8.jpg" alt="Guardar tabla desde el men&uacute; Archivo">
+          <div class="shot-caption"><strong>Guardar</strong>La tabla se guarda desde el men&uacute; <em>Archivo</em>.</div>
+        </button>
+        <button class="shot-card" type="button" onclick="openImageModal('assets/creacion_ssms/paso9.jpg','Elegir nombre de tabla')">
+          <img src="assets/creacion_ssms/paso9.jpg" alt="Ventana para elegir nombre de la tabla">
+          <div class="shot-caption"><strong>Nombre final</strong>Ingresar el nombre de la tabla y confirmar.</div>
+        </button>
+      </div>
+    </div>
+  </div>
+  <p style="margin-top:18px"><a class="inline-link" href="index.html">Volver al inicio</a></p>
+</div>
+<div class="section" id="tab-quiz">
+  <h2>Quiz de Repaso</h2>
+  <p class="section-intro">Este quiz resume el procedimiento de creaci&oacute;n de bases y tablas desde la interfaz gr&aacute;fica de SSMS. Al terminar vas a ver tu puntaje.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div class="score-num" id="score-num">0/0</div>
+    <div class="score-label" id="score-label">Resultado final</div>
+    <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+</div>
+
+<footer>
+  <div class="container">
+    Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+<div class="image-modal" id="image-modal" aria-hidden="true" onclick="closeImageModal()">
+  <div class="image-modal-dialog" onclick="event.stopPropagation()">
+    <div class="image-modal-top">
+      <div class="image-modal-title" id="image-modal-title">Vista ampliada</div>
+      <button class="image-modal-close" type="button" aria-label="Cerrar imagen" onclick="closeImageModal()">&times;</button>
+    </div>
+    <div class="image-modal-body">
+      <img id="image-modal-img" src="" alt="">
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script src="js/clase-04-creacion-bd-tablas-ssms.js"></script>
+
+</body>
+</html>
+
+

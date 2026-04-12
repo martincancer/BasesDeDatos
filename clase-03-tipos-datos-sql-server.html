@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tipos de Datos en SQL Server</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-03-tipos-datos-sql-server.css">
+</head>
+<body>
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNTY3MjUz" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-02-tablas-relaciones-normalizacion.html">&larr; Clase anterior</a>
+<a class="lesson-nav-btn next" href="clase-04-creacion-bd-tablas-ssms.html">Siguiente clase &rarr;</a>
+
+<div class="container">
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server &middot; Clase interactiva</div>
+  <h1>Tipos de Datos<br><em>en SQL Server</em></h1>
+  <p class="subtitle">Los tipos de datos le indican a SQL Server qu&eacute; clase de valor puede guardar cada columna. Elegirlos bien ayuda a dise&ntilde;ar tablas m&aacute;s claras, eficientes y coherentes.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:17%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('panorama',0)">Panorama</button>
+  <button class="nav-btn" onclick="showTab('numericos',1)">Num&eacute;ricos</button>
+  <button class="nav-btn" onclick="showTab('fechas',2)">Fecha y Hora</button>
+  <button class="nav-btn" onclick="showTab('cadenas',3)">Cadenas</button>
+  <button class="nav-btn" onclick="showTab('binarios',4)">BIT y Binarios</button>
+  <button class="nav-btn" onclick="showTab('quiz',5)">Quiz</button>
+</nav>
+
+<div class="section active" id="tab-panorama">
+  <h2>Panorama General</h2>
+  <p class="section-intro">Los tipos de datos m&aacute;s comunes en SQL Server pueden agruparse en familias: num&eacute;ricos, fecha y hora, cadenas de caracteres, booleanos y binarios.</p>
+  <div class="concepto">Cada columna deber&iacute;a usar el tipo que mejor representa el dato real que va a guardar. No es lo mismo un precio, una fecha de nacimiento, un nombre o un archivo PDF.</div>
+  <div class="intro-grid">
+    <div class="intro-card"><div class="card-num">01</div><h3>Num&eacute;ricos</h3><p>Enteros, decimales exactos y valores aproximados.</p></div>
+    <div class="intro-card"><div class="card-num">02</div><h3>Fecha y Hora</h3><p>Fechas, horarios y marcas temporales.</p></div>
+    <div class="intro-card"><div class="card-num">03</div><h3>Cadenas</h3><p>Texto de longitud fija, variable y con Unicode.</p></div>
+    <div class="intro-card"><div class="card-num">04</div><h3>BIT y Binarios</h3><p>Valores l&oacute;gicos y almacenamiento de archivos.</p></div>
+  </div>
+  <div class="tip info"><span class="tip-icon"></span><div>Elegir bien el tipo de dato mejora la validaci&oacute;n, la lectura del dise&ntilde;o y el uso del almacenamiento.</div></div>
+</div>
+
+<div class="section" id="tab-numericos">
+  <h2>Tipos Num&eacute;ricos</h2>
+  <p class="section-intro">Se dividen en <strong>exactos</strong> y <strong>aproximados</strong>. Los exactos guardan el valor tal cual; los aproximados se usan cuando puede haber peque&ntilde;as variaciones por c&aacute;lculo.</p>
+  <div class="compare-grid">
+    <div class="compare-card good">
+      <div class="compare-header">Exactos</div>
+      <ul>
+        <li><strong>INT, SMALLINT, TINYINT, BIGINT:</strong> almacenan n&uacute;meros enteros.</li>
+        <li><strong>DECIMAL</strong> y <strong>NUMERIC</strong>: almacenan n&uacute;meros con precisi&oacute;n y escala fija.</li>
+        <li><strong>DECIMAL</strong> y <strong>NUMERIC</strong> son sin&oacute;nimos en SQL Server.</li>
+      </ul>
+    </div>
+    <div class="compare-card sql">
+      <div class="compare-header">Aproximados</div>
+      <ul>
+        <li><strong>FLOAT:</strong> almacena n&uacute;meros de punto flotante.</li>
+        <li>Se usa mucho en c&aacute;lculos cient&iacute;ficos o mediciones.</li>
+        <li>No conviene para importes donde la exactitud es importante.</li>
+      </ul>
+    </div>
+  </div>
+  <table class="big-table">
+    <thead><tr><th>Tipo</th><th>Qu&eacute; guarda</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td><strong>INT</strong></td><td>Enteros</td><td>Cantidad de alumnos, n&uacute;mero de legajo</td></tr>
+      <tr><td><strong>DECIMAL(10,2)</strong></td><td>Números con decimales exactos, entre parentesis se indica la longitud total del número a guardar y la cantidad de decimales</td><td>Precios, saldos, promedios</td></tr>
+      <tr><td><strong>FLOAT</strong></td><td>Decimales aproximados</td><td>Mediciones y c&aacute;lculos t&eacute;cnicos</td></tr>
+    </tbody>
+  </table>
+  <div class="tip warn"><span class="tip-icon"></span><div>Para dinero o valores sensibles suele ser mejor usar <code>DECIMAL</code> antes que <code>FLOAT</code>.</div></div>
+</div>
+
+<div class="section" id="tab-fechas">
+  <h2>Fecha y Hora</h2>
+  <p class="section-intro">SQL Server ofrece varios tipos seg&uacute;n se quiera guardar solo la fecha, solo la hora o una combinaci&oacute;n de ambas con distinta precisi&oacute;n.</p>
+  <div class="content-card">
+    <div class="content-card-header">Tipos principales</div>
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li><div class="step-num">1</div><div><strong>DATE:</strong> guarda solo fecha.</div></li>
+        <li><div class="step-num">2</div><div><strong>TIME:</strong> guarda solo hora.</div></li>
+        <li><div class="step-num">3</div><div><strong>DATETIME:</strong> combina fecha y hora.</div></li>
+        <li><div class="step-num">4</div><div><strong>DATETIME2:</strong> igual que <code>DATETIME</code>, pero con mayor precisi&oacute;n.</div></li>
+        <li><div class="step-num">5</div><div><strong>DATETIMEOFFSET:</strong> fecha y hora con desplazamiento de zona horaria.</div></li>
+      </ul>
+    </div>
+  </div>
+  <table class="big-table">
+    <thead><tr><th>Tipo</th><th>Uso com&uacute;n</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td><strong>DATE</strong></td><td>Fechas de nacimiento, inscripciones</td><td><code>2026-04-09</code></td></tr>
+      <tr><td><strong>TIME</strong></td><td>Horarios de cursada</td><td><code>18:30:00</code></td></tr>
+      <tr><td><strong>DATETIME / DATETIME2</strong></td><td>Registro completo de fecha y hora</td><td><code>2026-04-09 18:30:00</code></td></tr>
+      <tr><td><strong>DATETIMEOFFSET</strong></td><td>Eventos con zona horaria</td><td><code>2026-04-09 18:30:00 -03:00</code></td></tr>
+    </tbody>
+  </table>
+  <div class="tip success"><span class="tip-icon"></span><div>En dise&ntilde;os actuales, <strong>DATETIME2</strong> suele ser una opci&oacute;n m&aacute;s completa que <strong>DATETIME</strong>.</div></div>
+</div>
+
+<div class="section" id="tab-cadenas">
+  <h2>Cadenas de Caracteres</h2>
+  <p class="section-intro">Estos tipos sirven para guardar texto. La diferencia principal es si la longitud es fija o variable, y si admite o no Unicode.</p>
+  <div class="compare-grid">
+    <div class="compare-card warn">
+      <div class="compare-header">Sin Unicode</div>
+      <ul>
+        <li><strong>CHAR:</strong> longitud fija.</li>
+        <li><strong>VARCHAR:</strong> longitud variable.</li>
+        <li><code>CHAR</code> rellena espacios si el texto es m&aacute;s corto.</li>
+      </ul>
+    </div>
+    <div class="compare-card purple">
+      <div class="compare-header">Con Unicode</div>
+      <ul>
+        <li><strong>NCHAR:</strong> longitud fija con Unicode.</li>
+        <li><strong>NVARCHAR:</strong> longitud variable con Unicode.</li>
+        <li>La <strong>N</strong> permite guardar caracteres Unicode.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="concepto">La diferencia entre los tipos con <strong>N</strong> y los que no la tienen es si pueden almacenar o no caracteres Unicode. Tambi&eacute;n cambia el espacio de almacenamiento que utilizan.</div>
+  <table class="big-table">
+    <thead><tr><th>Tipo</th><th>Longitud</th><th>Ejemplo de uso</th></tr></thead>
+    <tbody>
+      <tr><td><strong>CHAR(10)</strong></td><td>Fija</td><td>C&oacute;digos de longitud estable</td></tr>
+      <tr><td><strong>VARCHAR(100)</strong></td><td>Variable</td><td>Correos, apellidos, direcciones cortas</td></tr>
+      <tr><td><strong>NCHAR(10)</strong></td><td>Fija con Unicode</td><td>Etiquetas con soporte Unicode</td></tr>
+      <tr><td><strong>NVARCHAR(200)</strong></td><td>Variable con Unicode</td><td>Nombres y textos con acentos</td></tr>
+    </tbody>
+  </table>
+  <div class="tip info"><span class="tip-icon"></span><div>Para textos generales en espa&ntilde;ol, <code>NVARCHAR</code> suele ser una opci&oacute;n segura y flexible.</div></div>
+</div>
+
+<div class="section" id="tab-binarios">
+  <h2>BIT y Tipos Binarios</h2>
+  <p class="section-intro">Adem&aacute;s de texto, fechas y n&uacute;meros, a veces necesitamos guardar valores l&oacute;gicos o datos binarios como archivos.</p>
+  <div class="content-card">
+    <div class="content-card-header">Tipo booleano</div>
+    <div class="content-card-body">
+      <p style="color:var(--text2);font-size:14px;line-height:1.75"><strong>BIT</strong> almacena <strong>1</strong> para verdadero o <strong>0</strong> para falso.</p>
+      <div class="tip success" style="margin-bottom:0"><span class="tip-icon"></span><div>Es ideal para campos como <code>Activo</code>, <code>Aprobado</code>, <code>Pagado</code> o <code>TieneBeca</code>.</div></div>
+    </div>
+  </div>
+  <div class="compare-grid">
+    <div class="compare-card good">
+      <div class="compare-header">BINARY</div>
+      <ul>
+        <li>Datos binarios de longitud fija.</li>
+        <li>Hay que indicar el tama&ntilde;o m&aacute;ximo al definir la columna.</li>
+      </ul>
+    </div>
+    <div class="compare-card sql">
+      <div class="compare-header">VARBINARY</div>
+      <ul>
+        <li>Datos binarios de longitud variable.</li>
+        <li>Muy &uacute;til cuando el tama&ntilde;o puede cambiar.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="concepto">Los tipos <strong>BINARY</strong> y <strong>VARBINARY</strong> son &uacute;tiles para almacenar datos binarios como im&aacute;genes, documentos, PDFs u otros archivos.</div>
+  <table class="big-table">
+    <thead><tr><th>Tipo</th><th>Qu&eacute; almacena</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td><strong>BIT</strong></td><td>Valor l&oacute;gico simple</td><td>Alumno activo / inactivo</td></tr>
+      <tr><td><strong>BINARY</strong></td><td>Datos binarios de tama&ntilde;o fijo</td><td>Bloques de bytes de tama&ntilde;o constante</td></tr>
+      <tr><td><strong>VARBINARY</strong></td><td>Datos binarios de tama&ntilde;o variable</td><td>Archivos, im&aacute;genes y documentos</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:18px"><a class="inline-link" href="index.html">Volver al inicio</a></p>
+</div>
+<div class="section" id="tab-quiz">
+  <h2>Quiz de Repaso</h2>
+  <p class="section-intro">Estas preguntas te ayudan a revisar si ya distingu&iacute;s los tipos de datos m&aacute;s usados en SQL Server y cu&aacute;ndo conviene aplicar cada uno.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div class="score-num" id="score-num">0/0</div>
+    <div class="score-label" id="score-label">Resultado final</div>
+    <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+</div><!-- /container -->
+
+<footer>
+  <div class="container">
+    Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/clase-03-tipos-datos-sql-server.js"></script>
+
+</body>
+</html>
+

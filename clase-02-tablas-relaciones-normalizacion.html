@@ -1,0 +1,469 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tablas, Relaciones y Normalización</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-02-tablas-relaciones-normalizacion.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNTY3MjUz" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-01-introduccion-bd.html">&larr; Clase anterior</a>
+<a class="lesson-nav-btn next" href="clase-03-tipos-datos-sql-server.html">Siguiente clase &rarr;</a>
+
+<div class="container">
+
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server · Clase interactiva</div>
+  <h1>Tablas, Relaciones<br><em>y Normalización</em></h1>
+  <p class="subtitle">Segunda parte del recorrido: estructura de tablas, claves, relaciones entre entidades y normalizaci&oacute;n como base de un dise&ntilde;o limpio y consistente.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:25%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active"  onclick="showTab('tablas',0)">Tablas y Claves</button>
+  <button class="nav-btn"         onclick="showTab('relaciones',1)">Relaciones</button>
+  <button class="nav-btn"         onclick="showTab('normalizacion',2)">Normalización</button>
+  <button class="nav-btn"         onclick="showTab('quiz',3)">Quiz</button>
+</nav>
+
+<!-- TAB 4 - TABLAS Y CLAVES -->
+<div class="section active" id="tab-tablas">
+  <h2>Tablas y Claves</h2>
+  <p class="section-intro">La <strong>tabla</strong> es la unidad fundamental de almacenamiento en una base de datos relacional. Organiza los datos en filas y columnas, de forma similar a una planilla de c&aacute;lculo, pero con reglas mucho m&aacute;s estrictas.</p>
+
+  <h3>Anatom&iacute;a de una tabla</h3>
+
+  <div class="db-table-wrap">
+    <div class="db-table-title">Empleados <span>- tabla de ejemplo</span></div>
+    <div class="db-table-inner">
+      <table>
+        <tr>
+          <th>IdEmpleado <span class="col-badge pk">PK</span></th>
+          <th>Apellido</th>
+          <th>Nombre</th>
+          <th>DNI</th>
+          <th>FechaNac</th>
+          <th>IdDepartamento <span class="col-badge fk">FK</span></th>
+        </tr>
+        <tr><td class="pk-col">1</td><td>P&eacute;rez</td><td>Juan</td><td>31111223</td><td>10/05/1983</td><td class="fk-col">3</td></tr>
+        <tr><td class="pk-col">2</td><td>G&oacute;mez</td><td>Mario</td><td>24098743</td><td>21/09/1982</td><td class="fk-col">1</td></tr>
+        <tr><td class="pk-col">3</td><td>Su&aacute;rez</td><td>Carla</td><td>30164987</td><td>01/10/1981</td><td class="fk-col">1</td></tr>
+        <tr><td class="pk-col">4</td><td>Ram&iacute;rez</td><td>Jos&eacute;</td><td>40158366</td><td>05/01/1999</td><td class="fk-col null-val">NULL</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Componentes de la tabla</div>
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li><div class="step-num">C</div><div><strong>Columnas (campos / atributos):</strong> definen la estructura y el tipo de dato: nombre, fecha, n&uacute;mero, etc. Cada columna tiene un nombre &uacute;nico dentro de la tabla.</div></li>
+        <li><div class="step-num">F</div><div><strong>Filas (registros / tuplas):</strong> cada fila es una instancia de datos. En el ejemplo, cada fila es un empleado distinto.</div></li>
+        <li><div class="step-num">D</div><div><strong>Dato:</strong> es el valor ubicado en la intersecci&oacute;n entre una fila y una columna. Por ejemplo: <code>P&eacute;rez</code> en la columna Apellido de la fila 1.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <hr>
+  <h3>Clave Primaria (Primary Key - PK)</h3>
+
+  <div class="concepto">
+    La <strong>clave primaria</strong> es una columna, o combinaci&oacute;n de columnas, que <strong>identifica de forma &uacute;nica cada fila</strong> de la tabla. No puede repetirse y no puede ser NULL.
+  </div>
+
+  <div class="tip success">
+    <span class="tip-icon"></span>
+    <div>En el ejemplo, <code>IdEmpleado</code> es la clave primaria. No puede existir dos empleados con el mismo ID. SQL Server garantiza esto automáticamente una vez que declarás la columna como PK.</div>
+  </div>
+
+  <div class="tip danger">
+    <span class="tip-icon"></span>
+        <div>Usar el DNI, el nombre o el e-mail como clave primaria parece tentador, pero puede traer problemas: el DNI puede cambiar (por error), el nombre puede repetirse, el e-mail puede cambiar. Lo más seguro es un <strong>número entero autoincremental</strong> (<code>IDENTITY</code> en SQL Server).</div>
+  </div>
+
+  <hr>
+  <h3>Clave For&aacute;nea (Foreign Key - FK)</h3>
+
+  <div class="concepto">
+	La <strong>clave for&aacute;nea</strong> es una columna que contiene el valor de la clave primaria de <strong>otra tabla</strong>. Es el mecanismo que permite relacionar tablas entre s&iacute. En el ejemplo, <code>IdDepartamento</code> en la tabla Empleados es una FK que apunta a la tabla Departamentos.
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-card sql">
+      <div class="compare-header">Tabla: Departamentos</div>
+      <div style="padding:14px 18px">
+        <table style="width:100%;font-size:12.5px;font-family:'JetBrains Mono',monospace">
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="padding:4px 8px;color:var(--text2);font-weight:600;text-align:left">IdDepartamento <span class="col-badge pk">PK</span></th>
+            <th style="padding:4px 8px;color:var(--text2);font-weight:600;text-align:left">Nombre</th>
+          </tr>
+          <tr><td style="padding:6px 8px;color:var(--accent2);font-weight:600">1</td><td style="padding:6px 8px;color:var(--text2)">Sistemas</td></tr>
+          <tr><td style="padding:6px 8px;color:var(--accent2);font-weight:600">2</td><td style="padding:6px 8px;color:var(--text2)">Contabilidad</td></tr>
+          <tr><td style="padding:6px 8px;color:var(--accent2);font-weight:600">3</td><td style="padding:6px 8px;color:var(--text2)">Recursos Humanos</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="compare-card nosql">
+      <div class="compare-header">Tabla: Empleados (fragmento)</div>
+      <div style="padding:14px 18px">
+        <table style="width:100%;font-size:12.5px;font-family:'JetBrains Mono',monospace">
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="padding:4px 8px;color:var(--text2);font-weight:600;text-align:left">IdEmpleado <span class="col-badge pk">PK</span></th>
+            <th style="padding:4px 8px;color:var(--text2);font-weight:600;text-align:left">Nombre</th>
+            <th style="padding:4px 8px;color:var(--text2);font-weight:600;text-align:left">IdDepartamento <span class="col-badge fk">FK</span></th>
+          </tr>
+          <tr><td style="padding:6px 8px;color:var(--accent2);font-weight:600">1</td><td style="padding:6px 8px;color:var(--text2)">Juan</td><td style="padding:6px 8px;color:var(--blue);font-weight:600">3</td></tr>
+          <tr><td style="padding:6px 8px;color:var(--accent2);font-weight:600">2</td><td style="padding:6px 8px;color:var(--text2)">Mario</td><td style="padding:6px 8px;color:var(--blue);font-weight:600">1</td></tr>
+          <tr><td style="padding:6px 8px;color:var(--accent2);font-weight:600">3</td><td style="padding:6px 8px;color:var(--text2)">Carla</td><td style="padding:6px 8px;color:var(--blue);font-weight:600">1</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <p style="color:var(--text2);font-size:13.5px;line-height:1.7;margin-bottom:24px">El valor <code>3</code> en <code>IdDepartamento</code> del empleado Juan significa que ese empleado pertenece al departamento cuyo ID es 3, que en la otra tabla corresponde a <strong>Recursos Humanos</strong>.</p>
+
+  <div class="tip warn">
+    <span class="tip-icon"></span>
+    <div><strong>Integridad referencial:</strong> la FK garantiza que no pod&eacute;s asignarle a un empleado un departamento que no existe. Si intent&aacute;s insertar <code>IdDepartamento = 99</code> y no hay ning&uacute;n departamento con ese ID, SQL Server rechaza la operaci&oacute;n.</div>
+  </div>
+</div>
+
+<!-- TAB 5 - RELACIONES -->
+<div class="section" id="tab-relaciones">
+  <h2>Relaciones entre tablas</h2>
+  <p class="section-intro">El poder de las bases de datos relacionales est&aacute; en poder <strong>vincular tablas</strong> entre s&iacute;. Estos v&iacute;nculos se llaman relaciones y se implementan mediante claves for&aacute;neas.</p>
+
+  <h3>Tipos de relación</h3>
+
+  <div class="content-card" style="margin-bottom:20px">
+    <div class="content-card-header">1. Uno a Muchos (1:N) - la más común</div>
+    <div class="content-card-body">
+      <p style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:16px">Un registro de la tabla A puede relacionarse con <strong>muchos</strong> registros de la tabla B, pero cada registro de B se relaciona con <strong>uno solo</strong> de A.</p>
+      <div class="relation-diagram">
+        <div class="relation-box">
+          <div class="rb-title">Departamentos</div>
+          <div class="rb-fields"><span class="pk-col">IdDepartamento</span><br>Nombre</div>
+        </div>
+        <div class="relation-arrow">
+          <div class="rel-label">1</div>
+          <div class="rel-line"></div>
+          <div class="rel-label">N</div>
+        </div>
+        <div class="relation-box">
+          <div class="rb-title">Empleados</div>
+          <div class="rb-fields"><span class="pk-col">IdEmpleado</span><br>Nombre<br><span class="fk-col">IdDepartamento</span></div>
+        </div>
+      </div>
+      <p style="color:var(--text2);font-size:13.5px;line-height:1.7">Un departamento tiene muchos empleados. Cada empleado pertenece a un solo departamento. La FK est&aacute; del lado de "muchos" (Empleados).</p>
+    </div>
+  </div>
+
+  <div class="content-card" style="margin-bottom:20px">
+    <div class="content-card-header">2. Uno a Uno (1:1) - menos frecuente</div>
+    <div class="content-card-body">
+      <p style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:16px">Cada registro de la tabla A se relaciona con <strong>exactamente uno</strong> de la tabla B, y viceversa. Se usa para separar datos por razones de seguridad o rendimiento.</p>
+      <div class="relation-diagram">
+        <div class="relation-box">
+          <div class="rb-title">Empleados</div>
+          <div class="rb-fields"><span class="pk-col">IdEmpleado</span><br>Nombre</div>
+        </div>
+        <div class="relation-arrow">
+          <div class="rel-label">1</div>
+          <div class="rel-line"></div>
+          <div class="rel-label">1</div>
+        </div>
+        <div class="relation-box">
+          <div class="rb-title">Credenciales</div>
+          <div class="rb-fields"><span class="pk-col">IdCredencial</span><br>Usuario<br>PasswordHash<br><span class="fk-col">IdEmpleado</span></div>
+        </div>
+      </div>
+      <p style="color:var(--text2);font-size:13.5px;line-height:1.7">Los datos de acceso se guardan en una tabla aparte por seguridad. Cada empleado tiene exactamente una credencial.</p>
+    </div>
+  </div>
+
+  <div class="content-card" style="margin-bottom:28px">
+    <div class="content-card-header">3. Muchos a Muchos (N:M) - requiere tabla intermedia</div>
+    <div class="content-card-body">
+      <p style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:16px">Un registro de A puede relacionarse con muchos de B, y viceversa. <strong>No puede implementarse directamente</strong> con una FK: se necesita una <strong>tabla intermedia</strong>.</p>
+      <div class="relation-diagram">
+        <div class="relation-box">
+          <div class="rb-title">Alumnos</div>
+          <div class="rb-fields"><span class="pk-col">IdAlumno</span><br>Nombre</div>
+        </div>
+        <div class="relation-arrow">
+          <div class="rel-label">N</div>
+          <div class="rel-line"></div>
+          <div class="rel-label">M</div>
+        </div>
+        <div class="relation-box" style="border-color:var(--amber);border-style:dashed">
+          <div class="rb-title" style="color:var(--amber)">Inscripciones</div>
+          <div class="rb-fields"><span class="fk-col">IdAlumno</span><br><span class="fk-col">IdMateria</span><br>Fecha</div>
+        </div>
+        <div class="relation-arrow">
+          <div class="rel-label">M</div>
+          <div class="rel-line"></div>
+          <div class="rel-label">N</div>
+        </div>
+        <div class="relation-box">
+          <div class="rb-title">Materias</div>
+          <div class="rb-fields"><span class="pk-col">IdMateria</span><br>Nombre</div>
+        </div>
+      </div>
+      <p style="color:var(--text2);font-size:13.5px;line-height:1.7">Un alumno puede estar inscripto en muchas materias. Una materia puede tener muchos alumnos. La tabla <strong>Inscripciones</strong> resuelve esa relaci&oacute;n porque tiene dos FK, una hacia cada tabla principal.</p>
+    </div>
+  </div>
+
+  <hr>
+  <h3>Integridad referencial</h3>
+  <div class="concepto">La <strong>integridad referencial</strong> garantiza que las relaciones entre tablas sean siempre v&aacute;lidas. Si una FK apunta a un registro, ese registro <strong>debe existir</strong>.</div>
+
+  <table class="big-table">
+    <thead><tr><th>Operaci&oacute;n</th><th>&iquest;Qu&eacute; controla la FK?</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>INSERT en tabla hija</td>
+        <td>El valor de la FK debe existir en la tabla padre. No pod&eacute;s agregar un empleado con <code>IdDepartamento = 99</code> si ese departamento no existe.</td>
+      </tr>
+      <tr>
+        <td>UPDATE de la FK</td>
+        <td>El nuevo valor de la FK tambi&eacute;n debe existir en la tabla padre.</td>
+      </tr>
+      <tr>
+        <td>DELETE en tabla padre</td>
+        <td>No pod&eacute;s eliminar un departamento que todav&iacute;a tiene empleados asociados, salvo que se configure una regla en cascada.</td>
+      </tr>
+      <tr>
+        <td>UPDATE de la PK padre</td>
+        <td>No pod&eacute;s cambiar el ID de un departamento que tiene empleados asociados, salvo que se configure una regla en cascada.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- TAB 6 - NORMALIZACION -->
+<div class="section" id="tab-normalizacion">
+  <h2>Normalización</h2>
+  <p class="section-intro">La normalización es un proceso de diseño que organiza las tablas para eliminar redundancias, garantizar integridad y evitar anomalías.</p>
+
+  <div class="concepto">
+    <strong>El objetivo central:</strong> que cada dato se almacene <strong>una sola vez</strong>, en el lugar correcto, y que su significado quede claro por la estructura de la tabla. Sin normalización, el mismo dato puede existir en varios lugares: cuando cambia en uno, queda desactualizado en los demás.
+  </div>
+
+  <h3>Las tres formas normales principales</h3>
+
+  <div class="fn-grid">
+    <div class="fn-card fn1">
+      <div class="fn-card-header">
+        <span class="fn-num">1FN</span>
+        <h3>Primera Forma Normal</h3>
+      </div>
+      <div class="fn-card-body">Cada columna debe contener <strong>valores atómicos</strong> (indivisibles). No se permiten listas, conjuntos ni valores repetidos dentro de una misma celda. Tampoco puede haber filas duplicadas.</div>
+      <div class="fn-card-example">
+        ❌ Columna "Teléfonos": <em>"11-1234, 11-5678"</em><br>
+        ✅ Cada teléfono en una fila separada de la tabla Telefonos
+      </div>
+    </div>
+    <div class="fn-card fn2">
+      <div class="fn-card-header">
+        <span class="fn-num">2FN</span>
+        <h3>Segunda Forma Normal</h3>
+      </div>
+      <div class="fn-card-body">Cumple 1FN y además: todos los atributos dependen de <strong>la clave primaria completa</strong>. Aplica especialmente cuando la PK es compuesta (más de una columna).</div>
+      <div class="fn-card-example">
+        ❌ En Pedidos(IdPedido, IdCliente): guardar DireccionCliente depende solo del cliente, no del pedido.<br>
+        ✅ DireccionCliente va en la tabla Clientes.
+      </div>
+    </div>
+    <div class="fn-card fn3">
+      <div class="fn-card-header">
+        <span class="fn-num">3FN</span>
+        <h3>Tercera Forma Normal</h3>
+      </div>
+      <div class="fn-card-body">Cumple 2FN y además: ningún atributo depende de <strong>otro atributo que no sea la clave primaria</strong> (se eliminan las dependencias transitivas).</div>
+      <div class="fn-card-example">
+        ❌ En Empleados: guardar IdDepartamento y NombreDepartamento. El nombre depende del ID, no del empleado.<br>
+        ✅ NombreDepartamento va en la tabla Departamentos.
+      </div>
+    </div>
+  </div>
+  <hr>
+  <h3>Ejemplo paso a paso: de tabla sin normalizar a 3FN</h3>
+
+  <div class="norm-demo">
+    <div class="norm-demo-header">
+      <span class="norm-demo-title">Tabla de Pedidos - evolucionando la normalización</span>
+      <div class="norm-tabs">
+        <button class="norm-tab active" onclick="showNorm('sin')">Sin normalizar</button>
+        <button class="norm-tab" onclick="showNorm('1fn')">1FN</button>
+        <button class="norm-tab" onclick="showNorm('2fn')">2FN</button>
+        <button class="norm-tab" onclick="showNorm('3fn')">3FN</button>
+      </div>
+    </div>
+
+    <div class="norm-pane active" id="npane-sin">
+      <div class="tip danger" style="margin-bottom:16px">
+        <span class="tip-icon"></span>
+        <div>Problemas: la columna <strong>Productos</strong> tiene múltiples valores en una celda (viola 1FN). El dato del cliente se repite en cada pedido (redundancia). Si cambia el teléfono del cliente, hay que actualizar muchas filas.</div>
+      </div>
+      <div class="db-table-wrap">
+        <div class="db-table-title">Pedidos <span>- sin normalizar</span></div>
+        <div class="db-table-inner">
+          <table>
+            <tr>
+              <th>IdPedido</th><th>Cliente</th><th>TelCliente</th><th>Ciudad</th><th>Productos</th><th>Total</th>
+            </tr>
+            <tr><td>1</td><td>Juan Pérez</td><td>11-1234</td><td>Lobos</td><td style="color:var(--coral)">Lapiz, Cuaderno, Regla</td><td>$850</td></tr>
+            <tr><td>2</td><td>Juan Pérez</td><td>11-1234</td><td>Lobos</td><td style="color:var(--coral)">Borrador, Lapiz</td><td>$320</td></tr>
+            <tr><td>3</td><td>María López</td><td>11-9876</td><td>Cañuelas</td><td style="color:var(--coral)">Cuaderno</td><td>$400</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="norm-pane" id="npane-1fn">
+      <div class="tip warn" style="margin-bottom:16px">
+        <span class="tip-icon"></span>
+        <div>Se eliminaron las listas de productos: ahora cada fila tiene un solo producto. Pero aún hay <strong>dependencias parciales</strong>: los datos del cliente (teléfono, ciudad) no dependen del pedido sino del cliente. Si cambia el tel. de Juan, hay que actualizar 4 filas.</div>
+      </div>
+      <div class="db-table-wrap">
+        <div class="db-table-title">Pedidos <span>- en 1FN</span></div>
+        <div class="db-table-inner">
+          <table>
+            <tr>
+              <th>IdPedido <span class="col-badge pk">PK</span></th><th>Cliente</th><th>TelCliente</th><th>Ciudad</th><th>Producto</th><th>PrecioUnit</th>
+            </tr>
+            <tr><td class="pk-col">1</td><td>Juan Pérez</td><td style="color:var(--amber)">11-1234</td><td style="color:var(--amber)">Lobos</td><td>Lápiz</td><td>$150</td></tr>
+            <tr><td class="pk-col">1</td><td>Juan Pérez</td><td style="color:var(--amber)">11-1234</td><td style="color:var(--amber)">Lobos</td><td>Cuaderno</td><td>$400</td></tr>
+            <tr><td class="pk-col">2</td><td>Juan Pérez</td><td style="color:var(--amber)">11-1234</td><td style="color:var(--amber)">Lobos</td><td>Borrador</td><td>$170</td></tr>
+            <tr><td class="pk-col">3</td><td>María López</td><td style="color:var(--amber)">11-9876</td><td style="color:var(--amber)">Cañuelas</td><td>Cuaderno</td><td>$400</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="norm-pane" id="npane-2fn">
+      <div class="tip warn" style="margin-bottom:16px">
+        <span class="tip-icon"></span>
+        <div>Los clientes se separaron a su propia tabla. Pero aún hay una <strong>dependencia transitiva</strong>: la ciudad del cliente depende de la localidad, no directamente del IdCliente. Eso lo resuelve 3FN.</div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px">
+          <div class="db-table-wrap">
+            <div class="db-table-title">Clientes</div>
+            <div class="db-table-inner">
+              <table>
+                <tr><th>IdCliente <span class="col-badge pk">PK</span></th><th>Nombre</th><th>Telefono</th><th>Ciudad</th></tr>
+                <tr><td class="pk-col">1</td><td>Juan Pérez</td><td>11-1234</td><td>Lobos</td></tr>
+                <tr><td class="pk-col">2</td><td>María López</td><td>11-9876</td><td>Cañuelas</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:260px">
+          <div class="db-table-wrap">
+            <div class="db-table-title">Pedidos</div>
+            <div class="db-table-inner">
+              <table>
+                <tr><th>IdPedido <span class="col-badge pk">PK</span></th><th>IdCliente <span class="col-badge fk">FK</span></th><th>Producto</th><th>PrecioUnit</th></tr>
+                <tr><td class="pk-col">1</td><td class="fk-col">1</td><td>Lápiz</td><td>$150</td></tr>
+                <tr><td class="pk-col">1</td><td class="fk-col">1</td><td>Cuaderno</td><td>$400</td></tr>
+                <tr><td class="pk-col">2</td><td class="fk-col">1</td><td>Borrador</td><td>$170</td></tr>
+                <tr><td class="pk-col">3</td><td class="fk-col">2</td><td>Cuaderno</td><td>$400</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="norm-pane" id="npane-3fn">
+      <div class="tip success" style="margin-bottom:16px">
+        <span class="tip-icon"></span>
+        <div>Estructura final en 3FN. Cada dato vive en <strong>un solo lugar</strong>. Si cambia el teléfono de Juan, se actualiza en una sola fila. Si cambia el nombre de una ciudad, se actualiza en la tabla Localidades.</div>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px">
+          <div class="db-table-wrap">
+            <div class="db-table-title">Localidades</div>
+            <div class="db-table-inner">
+              <table>
+                <tr><th>IdLoc <span class="col-badge pk">PK</span></th><th>Nombre</th></tr>
+                <tr><td class="pk-col">1</td><td>Lobos</td></tr>
+                <tr><td class="pk-col">2</td><td>Cañuelas</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:220px">
+          <div class="db-table-wrap">
+            <div class="db-table-title">Clientes</div>
+            <div class="db-table-inner">
+              <table>
+                <tr><th>IdCli <span class="col-badge pk">PK</span></th><th>Nombre</th><th>Tel</th><th>IdLoc <span class="col-badge fk">FK</span></th></tr>
+                <tr><td class="pk-col">1</td><td>Juan P.</td><td>11-1234</td><td class="fk-col">1</td></tr>
+                <tr><td class="pk-col">2</td><td>María L.</td><td>11-9876</td><td class="fk-col">2</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:230px">
+          <div class="db-table-wrap">
+            <div class="db-table-title">Pedidos</div>
+            <div class="db-table-inner">
+              <table>
+                <tr><th>IdPed <span class="col-badge pk">PK</span></th><th>IdCli <span class="col-badge fk">FK</span></th><th>Producto</th><th>Precio</th></tr>
+                <tr><td class="pk-col">1</td><td class="fk-col">1</td><td>Lápiz</td><td>$150</td></tr>
+                <tr><td class="pk-col">1</td><td class="fk-col">1</td><td>Cuaderno</td><td>$400</td></tr>
+                <tr><td class="pk-col">2</td><td class="fk-col">1</td><td>Borrador</td><td>$170</td></tr>
+                <tr><td class="pk-col">3</td><td class="fk-col">2</td><td>Cuaderno</td><td>$400</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>En la práctica se normaliza hasta 3FN en la gran mayoría de los casos.</div>
+  </div>
+
+  <p style="margin-top:18px">
+    <a class="inline-link" href="index.html">Volver al inicio</a>
+  </p>
+</div>
+  <div class="section" id="tab-quiz">
+    <h2>Quiz de Repaso</h2>
+    <p class="section-intro">Este quiz repasa claves, relaciones y normalizaci&oacute;n. Completalo entero y al final vas a ver tu resultado.</p>
+    <div id="quiz-root"></div>
+    <div class="quiz-score" id="quiz-score" style="display:none">
+      <div class="score-num" id="score-num">0/0</div>
+      <div class="score-label" id="score-label">Resultado final</div>
+      <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+    </div>
+  </div>
+</div><!-- /container -->
+
+<footer>
+  <div class="container">
+    Bases de Datos · 2do. Año· Tecnicatura Superior en Análisis, Desarrollo y Programación de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formación Docente y Técnica N° 43 · Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/clase-02-tablas-relaciones-normalizacion.js"></script>
+
+</body>
+</html>
+
+
