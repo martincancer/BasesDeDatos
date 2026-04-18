@@ -94,7 +94,7 @@ WHERE Anio &gt;= 2020;</code></pre>
 
   <div class="tip info">
     <span class="tip-icon"></span>
-    <div>Una buena costumbre es pedir solo las columnas que necesit&aacute;s. <code>SELECT *</code> es c&oacute;modo para practicar, pero en tablas grandes puede traer datos de m&aacute;s.</div>
+    <div>Una buena costumbre es pedir solo las columnas que necesit&aacute;s. <code>SELECT *</code> es c&oacute;modo para practicar, pero en tablas grandes puede traer datos de m&aacute;s y afectar la performance de la consulta.</div>
   </div>
 </div>
 
@@ -121,7 +121,7 @@ VALUES (valor1, valor2, valor3);</code></pre>
         <li>
           <div class="step-num">1</div>
           <div>
-            <strong>Agregar una sola fila</strong>
+            <strong>Agregar una fila en la tabla Pelicula</strong>
             <pre class="sql-block compact"><code>INSERT INTO Peliculas (Titulo, Anio, Genero)
 VALUES ('El secreto de sus ojos', 2009, 'Drama');</code></pre>
           </div>
@@ -129,7 +129,7 @@ VALUES ('El secreto de sus ojos', 2009, 'Drama');</code></pre>
         <li>
           <div class="step-num">2</div>
           <div>
-            <strong>Agregar una fila en otra tabla</strong>
+            <strong>Agregar una fila en la tabla Directores</strong>
             <pre class="sql-block compact"><code>INSERT INTO Directores (Nombre, Pais)
 VALUES ('Juan Jos&eacute; Campanella', 'Argentina');</code></pre>
           </div>
@@ -140,7 +140,7 @@ VALUES ('Juan Jos&eacute; Campanella', 'Argentina');</code></pre>
 
   <div class="tip warn">
     <span class="tip-icon"></span>
-    <div>El orden de los valores debe coincidir exactamente con el orden de las columnas que declaraste. Si no, los datos pueden quedar mal cargados aunque la instrucci&oacute;n ejecute.</div>
+    <div>El orden de los valores debe coincidir exactamente con el orden de las columnas que declaraste. Si no, los datos pueden quedar mal cargados aunque la instrucci&oacute;n se ejecute.</div>
   </div>
 </div>
 
