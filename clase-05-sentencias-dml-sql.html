@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentencias B&aacute;sicas DML en SQL</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-05-sentencias-dml-sql.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNzk1ODk0" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-04-creacion-bd-tablas-ssms.html">&larr; Clase anterior</a>
+
+<div class="container">
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server &middot; Clase interactiva</div>
+  <h1>Sentencias B&aacute;sicas<br><em>DML en SQL</em></h1>
+  <p class="subtitle">En esta clase vemos las cuatro sentencias DML m&aacute;s usadas en SQL Server: <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code> y <code>DELETE</code>. La idea es entender para qu&eacute; sirve cada una, c&oacute;mo se escribe y en qu&eacute; errores conviene no caer.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:20%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('select',0)">SELECT</button>
+  <button class="nav-btn" onclick="showTab('insert',1)">INSERT</button>
+  <button class="nav-btn" onclick="showTab('update',2)">UPDATE</button>
+  <button class="nav-btn" onclick="showTab('delete',3)">DELETE</button>
+  <button class="nav-btn" onclick="showTab('quiz',4)">Quiz</button>
+</nav>
+
+<div class="section active" id="tab-select">
+  <h2>SELECT: consultar datos</h2>
+  <p class="section-intro"><code>SELECT</code> se usa para leer datos de una tabla. No modifica registros: su trabajo es mostrar informaci&oacute;n para que podamos analizarla, filtrarla o usarla como base para otra decisi&oacute;n.</p>
+
+  <div class="concepto">
+    Es la sentencia m&aacute;s usada en SQL. Cada vez que quer&eacute;s ver qu&eacute; hay cargado, revisar un conjunto de filas o comprobar qu&eacute; registros cumplen una condici&oacute;n, seguramente vas a usar <strong>SELECT</strong>.
+  </div>
+
+  <div class="intro-grid">
+    <div class="intro-card" style="--card-color:#60a5fa" onclick="showTab('insert',1)">
+      <div class="card-num">01</div>
+      <h3>INSERT</h3>
+      <p>Agrega filas nuevas a una tabla.</p>
+    </div>
+    <div class="intro-card" style="--card-color:#4ade80" onclick="showTab('update',2)">
+      <div class="card-num">02</div>
+      <h3>UPDATE</h3>
+      <p>Modifica datos que ya existen.</p>
+    </div>
+    <div class="intro-card" style="--card-color:#f87171" onclick="showTab('delete',3)">
+      <div class="card-num">03</div>
+      <h3>DELETE</h3>
+      <p>Elimina filas existentes con mucho cuidado.</p>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Sintaxis b&aacute;sica</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT columna1, columna2
+FROM nombre_tabla
+WHERE condicion;</code></pre>
+      <p class="note-line">Si quer&eacute;s traer todas las columnas, se puede usar <code>*</code>, aunque no siempre es la mejor opci&oacute;n.</p>
+      <pre class="sql-block compact"><code>SELECT *
+FROM Peliculas;</code></pre>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplos</div>
+    <div class="content-card-body">
+      <div class="example-grid">
+        <div class="example-card">
+          <h3>Ver todos los registros</h3>
+          <pre class="sql-block compact"><code>SELECT *
+FROM Peliculas;</code></pre>
+          <p>Sirve para revisar r&aacute;pidamente todo el contenido de la tabla.</p>
+        </div>
+        <div class="example-card">
+          <h3>Filtrar por una condici&oacute;n</h3>
+          <pre class="sql-block compact"><code>SELECT Titulo, Anio
+FROM Peliculas
+WHERE Anio &gt;= 2020;</code></pre>
+          <p>Ac&aacute; solo aparecen las pel&iacute;culas estrenadas desde 2020.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>Una buena costumbre es pedir solo las columnas que necesit&aacute;s. <code>SELECT *</code> es c&oacute;modo para practicar, pero en tablas grandes puede traer datos de m&aacute;s.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-insert">
+  <h2>INSERT: agregar datos</h2>
+  <p class="section-intro"><code>INSERT</code> se usa para cargar nuevas filas en una tabla. Cada vez que se registra un alumno, una pel&iacute;cula, una venta o un cliente nuevo, lo que est&aacute;s haciendo es un <code>INSERT</code>.</p>
+
+  <div class="concepto">
+    Lo m&aacute;s recomendable es escribir siempre el listado de columnas. Eso vuelve la instrucci&oacute;n m&aacute;s clara y evita errores si el orden interno de la tabla cambia o si alguna columna no se completa manualmente.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Sintaxis b&aacute;sica</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>INSERT INTO nombre_tabla (columna1, columna2, columna3)
+VALUES (valor1, valor2, valor3);</code></pre>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplos</div>
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li>
+          <div class="step-num">1</div>
+          <div>
+            <strong>Agregar una sola fila</strong>
+            <pre class="sql-block compact"><code>INSERT INTO Peliculas (Titulo, Anio, Genero)
+VALUES ('El secreto de sus ojos', 2009, 'Drama');</code></pre>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div>
+            <strong>Agregar una fila en otra tabla</strong>
+            <pre class="sql-block compact"><code>INSERT INTO Directores (Nombre, Pais)
+VALUES ('Juan Jos&eacute; Campanella', 'Argentina');</code></pre>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip warn">
+    <span class="tip-icon"></span>
+    <div>El orden de los valores debe coincidir exactamente con el orden de las columnas que declaraste. Si no, los datos pueden quedar mal cargados aunque la instrucci&oacute;n ejecute.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-update">
+  <h2>UPDATE: modificar datos</h2>
+  <p class="section-intro"><code>UPDATE</code> cambia valores de filas que ya existen. Es muy &uacute;til para corregir datos, actualizar estados o ajustar informaci&oacute;n que se guard&oacute; antes.</p>
+
+  <div class="concepto">
+    <strong>UPDATE</strong> no crea filas nuevas ni elimina filas. Lo que hace es tomar registros existentes y cambiar uno o m&aacute;s campos en ellos.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Sintaxis b&aacute;sica</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>UPDATE nombre_tabla
+SET columna1 = valor1,
+    columna2 = valor2
+WHERE condicion;</code></pre>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplos</div>
+    <div class="content-card-body">
+      <div class="example-grid">
+        <div class="example-card">
+          <h3>Actualizar un dato puntual</h3>
+          <pre class="sql-block compact"><code>UPDATE Peliculas
+SET Genero = 'Thriller'
+WHERE PeliculaID = 4;</code></pre>
+          <p>Solo cambia la fila cuya clave sea 4.</p>
+        </div>
+        <div class="example-card">
+          <h3>Antes de actualizar</h3>
+          <pre class="sql-block compact"><code>SELECT *
+FROM Peliculas
+WHERE PeliculaID = 4;</code></pre>
+          <p>Conviene revisar antes con un <code>SELECT</code> qu&eacute; fila va a ser afectada.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip danger">
+    <span class="tip-icon"></span>
+    <div>Si omit&iacute;s el <code>WHERE</code>, se actualizan todas las filas de la tabla. Ese es uno de los errores m&aacute;s comunes y m&aacute;s peligrosos al empezar.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-delete">
+  <h2>DELETE: eliminar filas</h2>
+  <p class="section-intro"><code>DELETE</code> elimina filas existentes de una tabla. Se usa cuando un registro ya no debe seguir estando en la base, pero justamente por eso es una sentencia que exige mucha atenci&oacute;n.</p>
+
+  <div class="concepto">
+    Si <code>UPDATE</code> ya es delicado, <code>DELETE</code> todav&iacute;a m&aacute;s. Antes de borrar, conviene comprobar con un <code>SELECT</code> exactamente qu&eacute; filas cumplen la condici&oacute;n.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Sintaxis b&aacute;sica</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>DELETE FROM nombre_tabla
+WHERE condicion;</code></pre>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplos</div>
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li>
+          <div class="step-num">1</div>
+          <div>
+            <strong>Borrar una fila puntual</strong>
+            <pre class="sql-block compact"><code>DELETE FROM Directores
+WHERE DirectorID = 7;</code></pre>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div>
+            <strong>Comprobar antes de borrar</strong>
+            <pre class="sql-block compact"><code>SELECT *
+FROM Directores
+WHERE DirectorID = 7;</code></pre>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="danger-box">
+    <h3>Atenci&oacute;n con este caso</h3>
+    <pre class="sql-block compact"><code>DELETE FROM Directores;</code></pre>
+    <p>Sin <code>WHERE</code>, esa instrucci&oacute;n elimina todas las filas de la tabla. La estructura de la tabla queda, pero los datos desaparecen.</p>
+  </div>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Sentencia</th>
+        <th>Para qu&eacute; sirve</th>
+        <th>Cuidado principal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>SELECT</code></td>
+        <td>Consultar o leer datos</td>
+        <td>No traer columnas innecesarias si no hacen falta</td>
+      </tr>
+      <tr>
+        <td><code>INSERT</code></td>
+        <td>Agregar filas nuevas</td>
+        <td>Respetar el orden y tipo de los valores</td>
+      </tr>
+      <tr>
+        <td><code>UPDATE</code></td>
+        <td>Modificar filas existentes</td>
+        <td>No olvidar el <code>WHERE</code></td>
+      </tr>
+      <tr>
+        <td><code>DELETE</code></td>
+        <td>Eliminar filas existentes</td>
+        <td>No olvidar el <code>WHERE</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top:18px"><a class="inline-link" href="index.html">Volver al inicio</a></p>
+</div>
+
+<div class="section" id="tab-quiz">
+  <h2>Quiz de Repaso</h2>
+  <p class="section-intro">Las preguntas mezclan usos, errores frecuentes y peque&ntilde;as trampas muy comunes cuando uno empieza. No son imposibles, pero est&aacute;n pensadas para obligarte a mirar bien qu&eacute; hace realmente cada sentencia.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div class="score-num" id="score-num">0/0</div>
+    <div class="score-label" id="score-label">Resultado final</div>
+    <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+</div>
+
+<footer>
+  <div class="container">
+    Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/clase-05-sentencias-dml-sql.js"></script>
+
+</body>
+</html>

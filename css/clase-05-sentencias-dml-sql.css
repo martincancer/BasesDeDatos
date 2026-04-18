@@ -1,0 +1,130 @@
+:root {
+  --bg: #0f1115;
+  --surface: #1a1d24;
+  --surface2: #22262f;
+  --surface3: #2a2f3a;
+  --border: #2f3542;
+  --border2: #3a4050;
+  --text: #e6e8ee;
+  --text2: #b5bac6;
+  --text3: #7b8190;
+  --accent: #4ade80;
+  --accent2: #22c55e;
+  --accent-bg: rgba(34,197,94,0.15);
+  --blue: #60a5fa;
+  --blue-bg: rgba(96,165,250,0.12);
+  --blue-border: rgba(96,165,250,0.25);
+  --amber: #f59e0b;
+  --amber-bg: rgba(245,158,11,0.12);
+  --amber-border: rgba(245,158,11,0.25);
+  --coral: #f87171;
+  --coral-bg: rgba(248,113,113,0.12);
+  --coral-border: rgba(248,113,113,0.25);
+  --teal: #2dd4bf;
+  --teal-bg: rgba(45,212,191,0.12);
+  --teal-border: rgba(45,212,191,0.25);
+  --tab-accent: var(--blue);
+  --tab-accent-soft: var(--blue-bg);
+  --tab-accent-border: var(--blue-border);
+  --tab-accent-title: #93c5fd;
+  --nav-active-color: var(--tab-accent);
+  --nav-active-border: var(--tab-accent);
+  --progress-fill: linear-gradient(90deg, var(--tab-accent), color-mix(in srgb, var(--tab-accent) 65%, white));
+  --section-title-color: var(--tab-accent-title);
+  --concept-border: var(--tab-accent);
+  --content-card-accent: inset 2px 0 0 var(--tab-accent);
+  --lesson-nav-hover-border: var(--tab-accent-border);
+  --subtitle-max: 700px;
+  --section-intro-max: 760px;
+}
+
+.concepto {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tab-accent) 12%, transparent);
+}
+
+.sql-block {
+  margin: 0;
+  background: #12151c;
+  border: 1px solid color-mix(in srgb, var(--tab-accent) 24%, var(--border));
+  border-radius: 12px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  color: #d7f9e9;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.sql-block.compact {
+  padding: 14px 16px;
+  font-size: 12.5px;
+}
+
+.sql-block code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+.note-line {
+  margin-top: 14px;
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.example-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.example-card h3 {
+  margin-bottom: 10px;
+}
+
+.example-card p {
+  margin-top: 12px;
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.danger-box {
+  background: var(--coral-bg);
+  border: 1px solid var(--coral-border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 28px;
+}
+
+.danger-box h3 {
+  color: #fca5a5;
+  margin-bottom: 12px;
+}
+
+.danger-box p {
+  margin-top: 12px;
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.big-table td code {
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .example-grid {
+    grid-template-columns: 1fr;
+  }
+}
