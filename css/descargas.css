@@ -1,0 +1,121 @@
+:root {
+  --bg: #0f1115;
+  --surface: #1a1d24;
+  --surface2: #22262f;
+  --border: #2f3542;
+  --text: #e6e8ee;
+  --text2: #b5bac6;
+  --text3: #7b8190;
+  --accent: #4ade80;
+  --accent2: #22c55e;
+  --blue: #60a5fa;
+  --amber: #f59e0b;
+  --purple: #a78bfa;
+  --container-max: 1080px;
+  --subtitle-max: 760px;
+}
+
+.downloads-section {
+  margin-bottom: 42px;
+}
+
+.downloads-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.download-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 16px 28px rgba(0,0,0,.14);
+  position: relative;
+  overflow: hidden;
+}
+
+.download-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--card-accent, var(--accent));
+}
+
+.download-card.pdf { --card-accent: #ef4444; }
+.download-card.sql { --card-accent: #22c55e; }
+.download-card.xlsx { --card-accent: #60a5fa; }
+
+.download-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.download-type,
+.download-size {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.download-type {
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+}
+
+.download-size {
+  color: var(--text3);
+  border: 1px solid var(--border);
+}
+
+.download-card h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.download-card p {
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 96px;
+}
+
+.download-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.resource-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 24px;
+}
+
+.resource-panel p {
+  color: var(--text2);
+  font-size: 15px;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 720px) {
+  .download-card p {
+    min-height: auto;
+  }
+}

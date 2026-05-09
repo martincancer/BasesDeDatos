@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INNER JOIN en SQL Server</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-07-inner-join-sql-server.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNzk1ODk0" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-06-consultas-sql-simples.html">&larr; Clase anterior</a>
+
+<div class="container">
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server &middot; Clase interactiva</div>
+  <h1>Consultas Multitabla<br><em>INNER JOIN en SQL Server</em></h1>
+  <p class="subtitle">En esta clase empezamos a combinar informaci&oacute;n de varias tablas usando <code>INNER JOIN</code>. La idea es entender por qu&eacute; hace falta unir tablas, c&oacute;mo se relacionan mediante claves y c&oacute;mo escribir joins simples y encadenados.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:17%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('intro',0)">Introducci&oacute;n</button>
+  <button class="nav-btn" onclick="showTab('join',1)">INNER JOIN</button>
+  <button class="nav-btn" onclick="showTab('ejemplos',2)">Ejemplos</button>
+  <button class="nav-btn" onclick="showTab('encadenados',3)">Joins encadenados</button>
+  <button class="nav-btn" onclick="showTab('resumen',4)">Resumen</button>
+  <button class="nav-btn" onclick="showTab('quiz',5)">Quiz</button>
+</nav>
+
+<div class="section active" id="tab-intro">
+  <h2>Por qu&eacute; necesitamos consultas multitabla</h2>
+  <p class="section-intro">Hasta ahora trabajamos con consultas sobre una sola tabla. Pero en una base de datos relacional, la informaci&oacute;n se distribuye entre varias tablas para evitar repeticiones y mantener la integridad. Por eso, para obtener datos completos, muchas veces necesitamos combinar tablas.</p>
+
+  <div class="concepto">
+    La separaci&oacute;n entre tablas no es un problema: es parte del dise&ntilde;o. Justamente por eso existen los <strong>JOINs</strong>, que permiten volver a reunir la informaci&oacute;n cuando hace falta consultarla.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplo simple: Actor y Pa&iacute;s</div>
+    <div class="content-card-body">
+      <p class="note-line">La tabla <code>Actor</code> guarda el <code>PaisID</code>, pero no el nombre del pa&iacute;s. Ese dato vive en la tabla <code>Pais</code>.</p>
+      <div class="example-grid">
+        <div class="example-card">
+          <h3>Actor</h3>
+          <ul class="topic-list">
+            <li><code>ActorID</code></li>
+            <li><code>Nombre</code></li>
+            <li><code>Apellido</code></li>
+            <li><code>FechaNac</code></li>
+            <li><code>FechaFall</code></li>
+            <li><code>PaisID</code></li>
+          </ul>
+        </div>
+        <div class="example-card">
+          <h3>Pais</h3>
+          <ul class="topic-list">
+            <li><code>PaisID</code></li>
+            <li><code>Pais</code></li>
+          </ul>
+        </div>
+      </div>
+      <p class="note-line">Si queremos mostrar qui&eacute;n es cada actor y a qu&eacute; pa&iacute;s pertenece, necesitamos unir ambas tablas.</p>
+    </div>
+  </div>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Concepto</th>
+        <th>Descripci&oacute;n</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Clave Primaria (PK)</td>
+        <td>Identifica de forma &uacute;nica cada fila de una tabla. Ejemplo: <code>PaisID</code> en <code>Pais</code>.</td>
+      </tr>
+      <tr>
+        <td>Clave For&aacute;nea (FK)</td>
+        <td>Columna que referencia la PK de otra tabla. Ejemplo: <code>PaisID</code> en <code>Actor</code>.</td>
+      </tr>
+      <tr>
+        <td>Integridad referencial</td>
+        <td>Garantiza que la FK apunte a un registro existente en la tabla relacionada.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section" id="tab-join">
+  <h2>Qu&eacute; hace INNER JOIN</h2>
+  <p class="section-intro"><code>INNER JOIN</code> devuelve solamente las filas que tienen coincidencia en ambas tablas, seg&uacute;n la condici&oacute;n indicada en la cl&aacute;usula <code>ON</code>.</p>
+
+  <div class="concepto">
+    Si una fila de la tabla izquierda no tiene correspondencia en la derecha, no aparece en el resultado. Lo mismo ocurre al rev&eacute;s.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Sintaxis b&aacute;sica</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT columnas
+FROM TablaA A
+INNER JOIN TablaB B
+  ON A.columna_fk = B.columna_pk
+WHERE condicion_adicional
+ORDER BY columna;</code></pre>
+    </div>
+  </div>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Cl&aacute;usula</th>
+        <th>Funci&oacute;n</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>FROM TablaA A</code></td>
+        <td>Indica la tabla principal del join.</td>
+      </tr>
+      <tr>
+        <td><code>INNER JOIN TablaB B</code></td>
+        <td>Especifica la tabla que se va a combinar.</td>
+      </tr>
+      <tr>
+        <td><code>ON A.col = B.col</code></td>
+        <td>Define la condici&oacute;n de combinaci&oacute;n, normalmente FK = PK.</td>
+      </tr>
+      <tr>
+        <td><code>WHERE</code></td>
+        <td>Permite agregar filtros despu&eacute;s de unir las tablas.</td>
+      </tr>
+      <tr>
+        <td><code>ORDER BY</code></td>
+        <td>Ordena el resultado final.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>En SQL Server, escribir <code>JOIN</code> a secas equivale a <code>INNER JOIN</code>. Ambas formas son v&aacute;lidas y producen el mismo resultado.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-ejemplos">
+  <h2>Ejemplos b&aacute;sicos con INNER JOIN</h2>
+  <p class="section-intro">Ac&aacute; aparecen dos casos t&iacute;picos: unir dos tablas relacionadas y usar alias para que la consulta sea m&aacute;s clara y m&aacute;s corta de escribir.</p>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplo 1: Actores y su pa&iacute;s de origen</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT
+  a.Nombre,
+  a.Apellido,
+  p.Pais
+FROM Actor a
+INNER JOIN Pais p
+  ON p.PaisID = a.PaisID;</code></pre>
+      <p class="note-line">Se usa <code>a</code> como alias de <code>Actor</code> y <code>p</code> como alias de <code>Pais</code>.</p>
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-card-header">Resultado esperado (muestra parcial)</div>
+    <table class="big-table result-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Pais</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sean</td>
+          <td>Harris</td>
+          <td>Reino Unido</td>
+        </tr>
+        <tr>
+          <td>Ignasi</td>
+          <td>Abadal</td>
+          <td>Espa&ntilde;a</td>
+        </tr>
+        <tr>
+          <td>Bela</td>
+          <td>Lugosi</td>
+          <td>Hungr&iacute;a</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplo 2: Pel&iacute;culas con g&eacute;nero y clasificaci&oacute;n</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT
+  p.TituloOriginal,
+  p.FechaEstreno,
+  g.Genero,
+  c.Clasificacion
+FROM Pelicula p
+JOIN Genero g
+  ON g.GeneroID = p.GeneroID
+JOIN Clasificacion c
+  ON c.ClasificacionID = p.ClasificacionID;</code></pre>
+      <p class="note-line">Ac&aacute; se usan dos joins seguidos. Tambi&eacute;n se ve que <code>JOIN</code> y <code>INNER JOIN</code> son equivalentes.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="tab-encadenados">
+  <h2>Joins encadenados</h2>
+  <p class="section-intro">Cuando la informaci&oacute;n que quer&eacute;s mostrar est&aacute; repartida en m&aacute;s de dos tablas, pod&eacute;s encadenar varios joins en una sola consulta.</p>
+
+  <div class="concepto">
+    La clave es seguir la ruta real de las relaciones. No todas las tablas se unen directamente entre s&iacute;: a veces hay que pasar por una tabla intermedia.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplo 3: Personaje, actor y pa&iacute;s</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT
+  pe.Personaje,
+  a.Nombre,
+  a.Apellido,
+  pa.Pais
+FROM Personaje pe
+INNER JOIN Actor a
+  ON a.ActorID = pe.ActorID
+INNER JOIN Pais pa
+  ON pa.PaisID = a.PaisID;</code></pre>
+      <p class="note-line">La relaci&oacute;n real es: <code>Personaje</code> &rarr; <code>Actor</code> &rarr; <code>Pais</code>. Por eso el join se encadena en ese orden.</p>
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-card-header">Resultado esperado (muestra parcial)</div>
+    <table class="big-table result-table">
+      <thead>
+        <tr>
+          <th>Personaje</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Pais</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Solomon Lane</td>
+          <td>Sean</td>
+          <td>Harris</td>
+          <td>Reino Unido</td>
+        </tr>
+        <tr>
+          <td>Vidal Gandolfo</td>
+          <td>Ignasi</td>
+          <td>Abadal</td>
+          <td>Espa&ntilde;a</td>
+        </tr>
+        <tr>
+          <td>Count Dracula</td>
+          <td>Bela</td>
+          <td>Lugosi</td>
+          <td>Hungr&iacute;a</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip warn">
+    <span class="tip-icon"></span>
+    <div>Si un&iacute;s tablas que no est&aacute;n relacionadas directamente o escrib&iacute;s mal la condici&oacute;n del <code>ON</code>, el resultado puede duplicarse, quedar vac&iacute;o o devolver datos incorrectos.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-resumen">
+  <h2>Resumen r&aacute;pido</h2>
+  <p class="section-intro">Esta tab resume las ideas m&aacute;s importantes de la clase para que te quede una gu&iacute;a corta de referencia al momento de escribir consultas con <code>INNER JOIN</code>.</p>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Idea clave</th>
+        <th>Resumen</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>INNER JOIN</td>
+        <td>Devuelve solo las filas que tienen coincidencia en ambas tablas.</td>
+      </tr>
+      <tr>
+        <td>ON</td>
+        <td>Indica la condici&oacute;n de uni&oacute;n, normalmente entre una FK y una PK.</td>
+      </tr>
+      <tr>
+        <td>Alias</td>
+        <td>Hacen la consulta m&aacute;s corta, clara y evitan ambig&uuml;edades.</td>
+      </tr>
+      <tr>
+        <td>JOIN = INNER JOIN</td>
+        <td>En SQL Server ambas formas son equivalentes.</td>
+      </tr>
+      <tr>
+        <td>Joins encadenados</td>
+        <td>Se pueden usar varios joins seguidos para recorrer relaciones entre varias tablas.</td>
+      </tr>
+      <tr>
+        <td>Combinaciones extra</td>
+        <td><code>INNER JOIN</code> se puede combinar con <code>WHERE</code>, <code>ORDER BY</code> y <code>TOP</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip success">
+    <span class="tip-icon"></span>
+    <div>Cuando tengas dudas, pens&aacute; primero qu&eacute; tablas necesit&aacute;s, despu&eacute;s c&oacute;mo se relacionan y reci&eacute;n ah&iacute; escrib&iacute; el join.</div>
+  </div>
+
+  <p style="margin-top:18px"><a class="inline-link" href="index.html">Volver al inicio</a></p>
+</div>
+
+<div class="section" id="tab-quiz">
+  <h2>Quiz de Repaso</h2>
+  <p class="section-intro">Este quiz mezcla definiciones, lectura de joins y errores comunes al unir tablas. La idea es comprobar si ya qued&oacute; clara la l&oacute;gica de las consultas multitabla con <code>INNER JOIN</code>.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div class="score-num" id="score-num">0/0</div>
+    <div class="score-label" id="score-label">Resultado final</div>
+    <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+</div>
+
+<footer>
+  <div class="container">
+    Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/clase-07-inner-join-sql-server.js"></script>
+
+</body>
+</html>

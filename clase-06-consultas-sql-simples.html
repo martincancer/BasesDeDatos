@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consultas SQL Simples en SQL Server</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-06-consultas-sql-simples.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNzk1ODk0" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-05-sentencias-dml-sql.html">&larr; Clase anterior</a>
+<a class="lesson-nav-btn next" href="clase-07-inner-join-sql-server.html">Siguiente clase &rarr;</a>
+
+<div class="container">
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server &middot; Clase interactiva</div>
+  <h1>Consultas SQL Simples<br><em>sobre una sola tabla</em></h1>
+  <p class="subtitle">En esta clase trabajamos con consultas <code>SELECT</code> sobre una &uacute;nica tabla. El foco est&aacute; en recuperar datos, elegir columnas, filtrar filas, buscar por patrones, ordenar resultados y limitar cu&aacute;ntas filas devuelve SQL Server.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:17%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('select',0)">SELECT</button>
+  <button class="nav-btn" onclick="showTab('where',1)">WHERE</button>
+  <button class="nav-btn" onclick="showTab('operadores',2)">Operadores</button>
+  <button class="nav-btn" onclick="showTab('order',3)">ORDER BY</button>
+  <button class="nav-btn" onclick="showTab('top',4)">TOP</button>
+  <button class="nav-btn" onclick="showTab('resumen',5)">Resumen</button>
+  <button class="nav-btn" onclick="showTab('quiz',6)">Quiz</button>
+</nav>
+
+<div class="section active" id="tab-select">
+  <h2>SELECT y sintaxis general</h2>
+  <p class="section-intro">La instrucci&oacute;n <code>SELECT</code> es el comando principal para consultar datos. Aunque trabajemos sobre una sola tabla, la consulta tiene un orden de cl&aacute;usulas que conviene respetar siempre para evitar errores de sintaxis.</p>
+
+  <div class="concepto">
+    En SQL Server el orden general es estricto: <strong>SELECT</strong> &rarr; <strong>FROM</strong> &rarr; <strong>WHERE</strong> &rarr; <strong>ORDER BY</strong>. Si alter&aacute;s ese orden, la consulta no funciona.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Sintaxis general</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT [TOP n] columnas | *
+FROM tabla
+[WHERE condicion]
+[ORDER BY columna ASC | DESC];</code></pre>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Formas b&aacute;sicas de seleccionar datos</div>
+    <div class="content-card-body">
+      <div class="example-grid">
+        <div class="example-card">
+          <h3>Todas las columnas</h3>
+          <pre class="sql-block compact"><code>SELECT *
+FROM Pelicula;</code></pre>
+          <p>Es pr&aacute;ctico para explorar, pero en consultas reales conviene pedir solo lo necesario.</p>
+        </div>
+        <div class="example-card">
+          <h3>Columnas espec&iacute;ficas</h3>
+          <pre class="sql-block compact"><code>SELECT PeliculaID, TituloOriginal, FechaEstreno
+FROM Pelicula;</code></pre>
+          <p>El orden en que list&aacute;s las columnas es el mismo en el que aparecen en el resultado.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-card-header">Resultado parcial</div>
+    <table class="big-table result-table">
+      <thead>
+        <tr>
+          <th>PeliculaID</th>
+          <th>TituloOriginal</th>
+          <th>FechaEstreno</th>
+          <th>Presupuesto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Jurassic Park</td>
+          <td>1993-06-11</td>
+          <td>63000000.00</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Spider-Man</td>
+          <td>2002-05-03</td>
+          <td>140000000.00</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>King Kong</td>
+          <td>2005-12-14</td>
+          <td>207000000.00</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Superman Returns</td>
+          <td>2006-07-14</td>
+          <td>204000000.00</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>Usar <code>*</code> es &uacute;til para practicar, pero listar columnas hace la consulta m&aacute;s clara, evita traer datos innecesarios, y no es recomendable en producci&oacute;n, debido a la sobrecarga de datos.</div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Alias de columnas</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT
+  TituloOriginal AS 'Titulo Original',
+  FechaEstreno AS 'Fecha de Estreno',
+  Presupuesto AS Costo
+FROM Pelicula;</code></pre>
+      <p class="note-line">Si el alias no tiene espacios, las comillas son opcionales. Con espacios, conviene usar comillas o corchetes.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="tab-where">
+  <h2>WHERE: filtrar filas</h2>
+  <p class="section-intro">La cl&aacute;usula <code>WHERE</code> sirve para decidir qu&eacute; filas se incluyen en el resultado. Cada fila se eval&uacute;a contra la condici&oacute;n y solo se muestran las que la cumplen.</p>
+
+  <div class="concepto">
+    Si una condici&oacute;n da <strong>verdadero</strong>, la fila aparece. Si da <strong>falso</strong> o <strong>NULL</strong>, la fila queda afuera del resultado.
+  </div>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Operador</th>
+        <th>Significado</th>
+        <th>Ejemplo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>=</code></td>
+        <td>Igual a</td>
+        <td><code>TituloOriginal = 'Spider-Man'</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;&gt;</code> o <code>!=</code></td>
+        <td>Distinto de</td>
+        <td><code>TituloOriginal &lt;&gt; 'Spider-Man'</code></td>
+      </tr>
+      <tr>
+        <td><code>&gt;</code>, <code>&gt;=</code></td>
+        <td>Mayor / mayor o igual</td>
+        <td><code>Presupuesto &gt;= 1000000</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;</code>, <code>&lt;=</code></td>
+        <td>Menor / menor o igual</td>
+        <td><code>Presupuesto &lt; 500000</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplo con WHERE</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT PeliculaID, TituloOriginal, FechaEstreno, Presupuesto
+FROM Pelicula
+WHERE Presupuesto &lt; 1000000;</code></pre>
+    </div>
+  </div>
+
+  <div class="tip success">
+    <span class="tip-icon"></span>
+    <div>La potencia de <code>SELECT</code> aparece de verdad cuando lo combin&aacute;s con filtros. Ah&iacute; dej&aacute;s de ver &quot;todo&quot; y empez&aacute;s a buscar justo lo que necesit&aacute;s.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-operadores">
+  <h2>Operadores de b&uacute;squeda</h2>
+  <p class="section-intro">Adem&aacute;s de comparar valores, una consulta simple puede combinar condiciones, buscar rangos, encontrar patrones de texto y detectar nulos.</p>
+
+  <div class="content-card">
+    <div class="content-card-header">AND y OR</div>
+    <div class="content-card-body">
+      <div class="example-grid">
+        <div class="example-card">
+          <h3>AND</h3>
+          <pre class="sql-block compact"><code>SELECT *
+FROM Pelicula
+WHERE Presupuesto &lt; 100000
+  AND FechaEstreno &gt; '19900101';</code></pre>
+          <p>Ambas condiciones deben ser verdaderas.</p>
+        </div>
+        <div class="example-card">
+          <h3>OR</h3>
+          <pre class="sql-block compact"><code>SELECT *
+FROM Pelicula
+WHERE Presupuesto &lt; 100000
+   OR FechaEstreno &gt; '19900101';</code></pre>
+          <p>Al menos una condici&oacute;n debe cumplirse.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip warn">
+    <span class="tip-icon"></span>
+    <div>Cuando mezcl&aacute;s <code>AND</code> y <code>OR</code>, us&aacute; par&eacute;ntesis. <code>AND</code> tiene mayor precedencia que <code>OR</code>, y eso puede cambiar el resultado si no lo control&aacute;s.</div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">BETWEEN, LIKE e IS NULL</div>
+    <div class="content-card-body">
+      <ul class="step-list">
+        <li>
+          <div class="step-num">1</div>
+          <div>
+            <strong>BETWEEN</strong>
+            <pre class="sql-block compact"><code>SELECT *
+FROM Pelicula
+WHERE Presupuesto BETWEEN 100000 AND 500000;</code></pre>
+            <p class="note-line">Incluye ambos extremos del rango.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div>
+            <strong>LIKE</strong>
+            <pre class="sql-block compact"><code>SELECT *
+FROM Pelicula
+WHERE TituloOriginal LIKE '%ROBOT%';</code></pre>
+            <p class="note-line">El porcentaje <code>%</code> funciona como comod&iacute;n para cualquier secuencia de caracteres.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div>
+            <strong>IS NULL</strong>
+            <pre class="sql-block compact"><code>SELECT *
+FROM Pelicula
+WHERE Presupuesto IS NULL;</code></pre>
+            <p class="note-line">Para comprobar nulos se usa <code>IS NULL</code> o <code>IS NOT NULL</code>, no <code>= NULL</code>.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="tab-order">
+  <h2>ORDER BY: ordenar resultados</h2>
+  <p class="section-intro"><code>ORDER BY</code> define en qu&eacute; orden aparecen las filas del resultado. Si no lo us&aacute;s, SQL Server no garantiza ning&uacute;n orden particular.</p>
+
+  <div class="concepto">
+    <code>ASC</code> ordena de menor a mayor y es el valor por defecto. <code>DESC</code> ordena de mayor a menor.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ordenaci&oacute;n simple</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT TituloOriginal, FechaEstreno, Presupuesto
+FROM Pelicula
+ORDER BY FechaEstreno DESC;</code></pre>
+      <p class="note-line">En este caso, las pel&iacute;culas m&aacute;s nuevas aparecen primero.</p>
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-card-header">Resultado parcial ordenado</div>
+    <table class="big-table result-table">
+      <thead>
+        <tr>
+          <th>TituloOriginal</th>
+          <th>FechaEstreno</th>
+          <th>Presupuesto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Passengers</td>
+          <td>2016-12-21</td>
+          <td>110000000.00</td>
+        </tr>
+        <tr>
+          <td>Rogue One: A Star Wars Story</td>
+          <td>2016-12-10</td>
+          <td>200000000.00</td>
+        </tr>
+        <tr>
+          <td>Silence</td>
+          <td>2016-11-29</td>
+          <td>50000000.00</td>
+        </tr>
+        <tr>
+          <td>Underworld: Blood Wars</td>
+          <td>2016-11-24</td>
+          <td>NULL</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">M&aacute;s de un criterio</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT TituloOriginal, FechaEstreno, Presupuesto
+FROM Pelicula
+ORDER BY FechaEstreno DESC, TituloOriginal ASC;</code></pre>
+      <p class="note-line">SQL Server ordena de izquierda a derecha: primero por fecha y, si hay empate, por t&iacute;tulo.</p>
+    </div>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>En SQL Server, los valores <code>NULL</code> aparecen primero en orden ascendente y al final en orden descendente.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-top">
+  <h2>TOP: limitar filas devueltas</h2>
+  <p class="section-intro"><code>TOP</code> permite limitar la cantidad de filas que devuelve una consulta. Es muy &uacute;til cuando quer&eacute;s ver solo una parte del resultado, como los 5 registros m&aacute;s recientes o los 10 m&aacute;s costosos.</p>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplo con TOP</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT TOP 5 TituloOriginal, FechaEstreno, Recaudacion
+FROM Pelicula
+ORDER BY Recaudacion DESC;</code></pre>
+      <p class="note-line">As&iacute; obten&eacute;s las 5 pel&iacute;culas con mayor recaudaci&oacute;n.</p>
+    </div>
+  </div>
+
+  <div class="tip danger">
+    <span class="tip-icon"></span>
+    <div>Si us&aacute;s <code>TOP</code> sin <code>ORDER BY</code>, las filas devueltas pueden ser arbitrarias. Para que el resultado tenga sentido, conviene acompa&ntilde;arlo siempre con un criterio de orden.</div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-card-header">Ejemplo de salida con TOP</div>
+    <table class="big-table result-table">
+      <thead>
+        <tr>
+          <th>TituloOriginal</th>
+          <th>FechaEstreno</th>
+          <th>Recaudacion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Avatar</td>
+          <td>2009-12-18</td>
+          <td>2923706026.00</td>
+        </tr>
+        <tr>
+          <td>Avengers: Endgame</td>
+          <td>2019-04-26</td>
+          <td>2799439100.00</td>
+        </tr>
+        <tr>
+          <td>Titanic</td>
+          <td>1997-12-19</td>
+          <td>2264743305.00</td>
+        </tr>
+        <tr>
+          <td>Star Wars: The Force Awakens</td>
+          <td>2015-12-18</td>
+          <td>2071310218.00</td>
+        </tr>
+        <tr>
+          <td>Avengers: Infinity War</td>
+          <td>2018-04-27</td>
+          <td>2052415039.00</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top:18px"><a class="inline-link" href="index.html">Volver al inicio</a></p>
+</div>
+
+<div class="section" id="tab-resumen">
+  <h2>Resumen de cl&aacute;usulas y operadores</h2>
+  <p class="section-intro">Esta tab resume las piezas principales de una consulta simple sobre una sola tabla. La idea es que te quede como machete visual r&aacute;pido para repasar sintaxis y uso general.</p>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Elemento</th>
+        <th>Uso principal</th>
+        <th>Ejemplo corto</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>SELECT</code></td>
+        <td>Definir qu&eacute; columnas mostrar</td>
+        <td><code>SELECT TituloOriginal</code></td>
+      </tr>
+      <tr>
+        <td><code>FROM</code></td>
+        <td>Indicar la tabla de origen</td>
+        <td><code>FROM Pelicula</code></td>
+      </tr>
+      <tr>
+        <td><code>WHERE</code></td>
+        <td>Filtrar filas</td>
+        <td><code>WHERE Presupuesto &gt; 1000000</code></td>
+      </tr>
+      <tr>
+        <td><code>AND / OR / NOT</code></td>
+        <td>Combinar condiciones</td>
+        <td><code>WHERE A AND B</code></td>
+      </tr>
+      <tr>
+        <td><code>BETWEEN</code></td>
+        <td>Buscar dentro de un rango</td>
+        <td><code>WHERE Presupuesto BETWEEN 100000 AND 500000</code></td>
+      </tr>
+      <tr>
+        <td><code>LIKE</code></td>
+        <td>Buscar por patr&oacute;n de texto</td>
+        <td><code>WHERE TituloOriginal LIKE '%ROBOT%'</code></td>
+      </tr>
+      <tr>
+        <td><code>IS NULL</code></td>
+        <td>Detectar valores nulos</td>
+        <td><code>WHERE Presupuesto IS NULL</code></td>
+      </tr>
+      <tr>
+        <td><code>ORDER BY</code></td>
+        <td>Ordenar el resultado</td>
+        <td><code>ORDER BY FechaEstreno DESC</code></td>
+      </tr>
+      <tr>
+        <td><code>TOP</code></td>
+        <td>Limitar cantidad de filas</td>
+        <td><code>SELECT TOP 5 ...</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>Si dud&aacute;s c&oacute;mo arrancar una consulta, pens&aacute; esta secuencia: qu&eacute; quer&eacute;s ver, de qu&eacute; tabla sale, qu&eacute; filas te interesan y en qu&eacute; orden quer&eacute;s el resultado.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-quiz">
+  <h2>Quiz de Repaso</h2>
+  <p class="section-intro">Este quiz apunta a detalles que suelen confundir al principio: orden de cl&aacute;usulas, filtros, uso de nulos y diferencias entre traer datos, ordenarlos o limitar cu&aacute;ntos se muestran.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div class="score-num" id="score-num">0/0</div>
+    <div class="score-label" id="score-label">Resultado final</div>
+    <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+</div>
+
+<footer>
+  <div class="container">
+    Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/clase-06-consultas-sql-simples.js"></script>
+
+</body>
+</html>
