@@ -1,0 +1,134 @@
+:root {
+  --bg: #0f1115;
+  --surface: #1a1d24;
+  --surface2: #22262f;
+  --border: #2f3542;
+  --text: #e6e8ee;
+  --text2: #b5bac6;
+  --text3: #7b8190;
+  --accent: #4ade80;
+  --container-max: 1080px;
+  --subtitle-max: 760px;
+}
+
+.videos-section {
+  margin-bottom: 42px;
+}
+
+.videos-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+}
+
+.video-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 16px 28px rgba(0,0,0,.14);
+  position: relative;
+  overflow: hidden;
+  max-width: 920px;
+}
+
+.video-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--card-accent, var(--accent));
+}
+
+.video-card.tablas { --card-accent: #60a5fa; }
+.video-card.creacion { --card-accent: #f59e0b; }
+.video-card.dml { --card-accent: #4ade80; }
+.video-card.select { --card-accent: #a78bfa; }
+
+.video-frame {
+  margin: 6px 0 16px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #0b0d11;
+}
+
+.video-frame iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 8.7;
+  border: 0;
+}
+
+.video-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.video-type,
+.video-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.video-type {
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+}
+
+.video-tag {
+  color: var(--text3);
+  border: 1px solid var(--border);
+}
+
+.video-card h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.video-card p {
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: auto;
+}
+
+.video-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.resource-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 24px;
+}
+
+.resource-panel p {
+  color: var(--text2);
+  font-size: 15px;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 720px) {
+  .video-card p {
+    min-height: auto;
+  }
+}
