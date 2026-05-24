@@ -140,6 +140,118 @@ header {
   color: var(--text);
 }
 
+.evaluation-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(8, 10, 14, 0.78);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+
+.evaluation-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.evaluation-dialog {
+  position: relative;
+  width: min(100%, 540px);
+  max-height: calc(100vh - 44px);
+  overflow: auto;
+  padding: 28px;
+  border: 1px solid var(--amber-border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #242019, var(--surface));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+  transform: translateY(12px) scale(.98);
+  transition: transform .2s ease;
+}
+
+.evaluation-modal.open .evaluation-dialog {
+  transform: translateY(0) scale(1);
+}
+
+.evaluation-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--text2);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.evaluation-label {
+  display: inline-flex;
+  margin-bottom: 14px;
+  padding: 6px 10px;
+  border: 1px solid var(--amber-border);
+  border-radius: 999px;
+  background: var(--amber-bg);
+  color: var(--amber);
+  font-family: 'Source Code Pro', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.evaluation-dialog h2 {
+  max-width: 420px;
+  margin-bottom: 12px;
+  color: var(--text);
+  font-family: 'Source Code Pro', monospace;
+  font-size: 26px;
+  line-height: 1.22;
+  font-weight: 600;
+}
+
+.evaluation-dialog p {
+  color: var(--text2);
+  line-height: 1.7;
+}
+
+.evaluation-topics {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 22px;
+  list-style: none;
+}
+
+.evaluation-topics li {
+  display: flex;
+  gap: 10px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.evaluation-topics li::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  margin-top: 9px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.evaluation-action {
+  cursor: pointer;
+}
+
 .hero-panel {
   background: linear-gradient(180deg, var(--surface2), var(--surface));
   border: 1px solid var(--border);
@@ -432,5 +544,14 @@ section {
   .hero-panel {
     padding-left: 18px;
     padding-right: 18px;
+  }
+
+  .evaluation-dialog {
+    padding: 24px 20px;
+  }
+
+  .evaluation-dialog h2 {
+    padding-right: 38px;
+    font-size: 22px;
   }
 }
