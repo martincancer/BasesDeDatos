@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluaci&oacute;n Nro. 1 | Resoluci&oacute;n SQL</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/evaluacion-01-resolucion-sql.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNzk1ODk0" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-07-inner-join-sql-server.html">&larr; Clase anterior</a>
+
+<div class="container">
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">Evaluaci&oacute;n &middot; Resoluci&oacute;n guiada</div>
+  <h1>Bases de Datos<br><em>Evaluaci&oacute;n Nro. 1 resuelta</em></h1>
+  <p class="subtitle">Resoluci&oacute;n de la primera evaluaci&oacute;n sobre inserci&oacute;n, modificaci&oacute;n y eliminaci&oacute;n de datos, junto con consultas SQL usando filtros, ordenamiento, <code>TOP</code> y combinaciones con <code>INNER JOIN</code>.</p>
+</header>
+
+<section class="evaluation-summary">
+  <article class="summary-card">
+    <span class="summary-label">Temas evaluados</span>
+    <ul class="summary-list">
+      <li><code>INSERT</code>, <code>UPDATE</code> y <code>DELETE</code>.</li>
+      <li>Consultas sobre varias tablas con <code>INNER JOIN</code>.</li>
+      <li>Filtros con <code>WHERE</code> y fechas.</li>
+      <li>Ordenamiento con <code>ORDER BY</code> y uso de <code>TOP</code>.</li>
+    </ul>
+  </article>
+</section>
+
+<main class="evaluation-list">
+  <article class="exercise-card">
+    <div class="exercise-top">
+      <span class="exercise-number">Ejercicio 01 - a)</span>
+      <span class="exercise-tag dml">DML</span>
+    </div>
+    <h2>Insertar un nuevo actor</h2>
+    <p class="statement">Agregar al actor Jason Begue, brit&aacute;nico, nacido el 12 de abril de 1960, de sexo masculino.</p>
+    <div class="solution-card">
+      <div class="solution-title">Resoluci&oacute;n</div>
+      <pre class="sql-block"><code>-- Busco el id del pais Reino Unido
+SELECT PaisID
+FROM Pais
+WHERE Pais = 'Reino Unido'; -- = 240
+
+-- Inserto el nuevo actor
+INSERT INTO Actor (Nombre, Apellido, FechaNac, PaisID, Sexo)
+VALUES ('Jason', 'Begue', '19600412', 240, 'M');</code></pre>
+    </div>
+  </article>
+
+  <article class="exercise-card">
+    <div class="exercise-top">
+      <span class="exercise-number">Ejercicio 01 - b)</span>
+      <span class="exercise-tag dml">DML</span>
+    </div>
+    <h2>Modificar los datos del actor</h2>
+    <p class="statement">Modificar el apellido del actor Begue por Beghe, su fecha de nacimiento por el 12 de marzo y su pa&iacute;s de origen por Estados Unidos.</p>
+    <div class="solution-card">
+      <div class="solution-title">Resoluci&oacute;n</div>
+      <pre class="sql-block"><code>-- Busco el id del pais Estados Unidos
+SELECT PaisID
+FROM Pais
+WHERE Pais = 'Estados Unidos'; -- = 241
+
+-- Modifico el actor
+UPDATE Actor
+SET Apellido = 'Beghe',
+    FechaNac = '19600312',
+    PaisID = 241
+WHERE ActorID = 4110;</code></pre>
+    </div>
+  </article>
+
+  <article class="exercise-card">
+    <div class="exercise-top">
+      <span class="exercise-number">Ejercicio 01 - c)</span>
+      <span class="exercise-tag dml">DML</span>
+    </div>
+    <h2>Eliminar el actor agregado</h2>
+    <p class="statement">Eliminar al actor reci&eacute;n agregado.</p>
+    <div class="solution-card">
+      <div class="solution-title">Resoluci&oacute;n</div>
+      <pre class="sql-block"><code>DELETE FROM Actor
+WHERE ActorID = 4110;</code></pre>
+    </div>
+  </article>
+
+  <article class="exercise-card">
+    <div class="exercise-top">
+      <span class="exercise-number">Ejercicio 02</span>
+      <span class="exercise-tag query">Consulta</span>
+    </div>
+    <h2>Pel&iacute;culas de acci&oacute;n anteriores a 1990</h2>
+    <p class="statement">Obtener el t&iacute;tulo original, fecha de estreno, la clasificaci&oacute;n y el c&oacute;digo de clasificaci&oacute;n de todas las pel&iacute;culas del g&eacute;nero 'Acci&oacute;n' y estrenadas antes de 1990, ordenado por t&iacute;tulo original.</p>
+    <div class="solution-card">
+      <div class="solution-title">Resoluci&oacute;n</div>
+      <pre class="sql-block"><code>SELECT
+  P.TituloOriginal,
+  P.FechaEstreno,
+  C.Clasificacion,
+  C.Codigo
+FROM Pelicula P
+INNER JOIN Genero G
+  ON P.GeneroID = G.GeneroID
+INNER JOIN Clasificacion C
+  ON P.ClasificacionID = C.ClasificacionID
+WHERE G.Genero = 'Acci&oacute;n'
+  AND P.FechaEstreno &lt; '19900101'
+ORDER BY P.TituloOriginal;</code></pre>
+    </div>
+  </article>
+
+  <article class="exercise-card">
+    <div class="exercise-top">
+      <span class="exercise-number">Ejercicio 03</span>
+      <span class="exercise-tag query">Consulta</span>
+    </div>
+    <h2>Las 5 pel&iacute;culas con mayor recaudaci&oacute;n</h2>
+    <p class="statement">Mostrar el t&iacute;tulo original, nombre y apellido del director, nombre del pa&iacute;s de la pel&iacute;cula y nombre del estudio para las 5 pel&iacute;culas con mayor recaudaci&oacute;n, de mayor a menor.</p>
+    <div class="solution-card">
+      <div class="solution-title">Resoluci&oacute;n</div>
+      <pre class="sql-block"><code>SELECT TOP 5
+  P.TituloOriginal,
+  D.Nombre AS NombreDirector,
+  D.Apellido AS ApellidoDirector,
+  Pa.Pais,
+  E.Estudio
+FROM Pelicula P
+INNER JOIN Director D
+  ON P.DirectorID = D.DirectorID
+INNER JOIN Pais Pa
+  ON P.PaisID = Pa.PaisID
+INNER JOIN Estudio E
+  ON P.EstudioID = E.EstudioID
+ORDER BY P.Recaudacion DESC;</code></pre>
+    </div>
+  </article>
+
+  <article class="exercise-card">
+    <div class="exercise-top">
+      <span class="exercise-number">Ejercicio 04</span>
+      <span class="exercise-tag query">Consulta</span>
+    </div>
+    <h2>Actrices, personajes y pel&iacute;culas</h2>
+    <p class="statement">Listar el nombre y apellido de las actrices, el personaje que interpretaron y el t&iacute;tulo de la pel&iacute;cula, ordenado por apellido.</p>
+    <div class="solution-card">
+      <div class="solution-title">Resoluci&oacute;n</div>
+      <pre class="sql-block"><code>SELECT
+  A.Nombre,
+  A.Apellido,
+  P.Personaje,
+  Pe.TituloOriginal
+FROM Actor A
+INNER JOIN Personaje P
+  ON A.ActorID = P.ActorID
+INNER JOIN Pelicula Pe
+  ON Pe.PeliculaID = P.PeliculaID
+WHERE A.Sexo = 'F'
+ORDER BY A.Apellido;</code></pre>
+    </div>
+  </article>
+
+  <article class="exercise-card">
+    <div class="exercise-top">
+      <span class="exercise-number">Ejercicio 05</span>
+      <span class="exercise-tag query">Consulta</span>
+    </div>
+    <h2>Pel&iacute;culas de directores nacidos antes de 1960</h2>
+    <p class="statement">Listar t&iacute;tulo original, cantidad de nominaciones al Oscar, nombre y apellido del director, nombre del g&eacute;nero y del lenguaje de las pel&iacute;culas dirigidas por directores nacidos antes de 1960, ordenado por nominaciones de mayor a menor.</p>
+    <div class="solution-card">
+      <div class="solution-title">Resoluci&oacute;n</div>
+      <pre class="sql-block"><code>SELECT
+  P.TituloOriginal,
+  P.OscarNomin,
+  D.Nombre AS NombreDirector,
+  D.Apellido AS ApellidoDirector,
+  G.Genero,
+  L.Lenguaje
+FROM Pelicula P
+INNER JOIN Director D
+  ON P.DirectorID = D.DirectorID
+INNER JOIN Genero G
+  ON P.GeneroID = G.GeneroID
+INNER JOIN Lenguaje L
+  ON P.LenguajeID = L.LenguajeID
+WHERE D.FechaNac &lt; '19600101'
+ORDER BY P.OscarNomin DESC;</code></pre>
+    </div>
+  </article>
+
+  <article class="exercise-card">
+    <div class="exercise-top">
+      <span class="exercise-number">Ejercicio 06</span>
+      <span class="exercise-tag query">Consulta</span>
+    </div>
+    <h2>Pel&iacute;culas ganadoras de Oscar con alta recaudaci&oacute;n</h2>
+    <p class="statement">Listar t&iacute;tulo original, director, estudio, g&eacute;nero y pa&iacute;s de las pel&iacute;culas que ganaron al menos 1 Oscar, cuya recaudaci&oacute;n supere el doble del presupuesto, ordenado por Oscars ganados de mayor a menor.</p>
+    <div class="solution-card">
+      <div class="solution-title">Resoluci&oacute;n</div>
+      <pre class="sql-block"><code>SELECT
+  P.TituloOriginal,
+  D.Nombre AS NombreDirector,
+  D.Apellido AS ApellidoDirector,
+  E.Estudio,
+  G.Genero,
+  Pa.Pais
+FROM Pelicula P
+INNER JOIN Director D
+  ON P.DirectorID = D.DirectorID
+INNER JOIN Estudio E
+  ON P.EstudioID = E.EstudioID
+INNER JOIN Genero G
+  ON P.GeneroID = G.GeneroID
+INNER JOIN Pais Pa
+  ON P.PaisID = Pa.PaisID
+WHERE P.OscarGanados &gt; 0
+  AND P.Recaudacion &gt; 2 * P.Presupuesto
+ORDER BY P.OscarGanados DESC;</code></pre>
+    </div>
+  </article>
+</main>
+</div>
+
+<footer>
+  <div class="container">
+    Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+</body>
+</html>

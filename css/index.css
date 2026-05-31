@@ -398,6 +398,16 @@ section {
   box-shadow: inset 0 0 0 1px rgba(74, 222, 128, 0.08);
 }
 
+.class-card.evaluation-card {
+  border-color: var(--amber-border);
+  background: linear-gradient(180deg, rgba(251,191,36,0.08), var(--surface) 42%);
+  box-shadow: inset 0 0 0 1px rgba(251,191,36,0.08);
+}
+
+.evaluation-card .class-header h3 {
+  color: #fde68a;
+}
+
 .class-header {
   padding: 18px 22px 0;
 }
@@ -426,6 +436,12 @@ section {
   background: var(--accent-bg);
   color: var(--accent);
   border: 1px solid rgba(148, 230, 173, 0.25);
+}
+
+.chip.eval {
+  background: var(--amber-bg);
+  color: var(--amber);
+  border: 1px solid var(--amber-border);
 }
 
 .chip.soft {
@@ -463,6 +479,10 @@ section {
   background: var(--accent);
 }
 
+.evaluation-card .topic-list li::before {
+  background: var(--amber);
+}
+
 .class-footer {
   display: flex;
   flex-wrap: wrap;
@@ -480,6 +500,11 @@ section {
   color: #effff5;
   font-size: 14px;
   font-weight: 600;
+}
+
+.evaluation-card .eval-link {
+  background: #d97706;
+  color: #fff7ed;
 }
 
 .notice-card.info {
