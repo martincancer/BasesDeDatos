@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>INNER JOIN - Actor y Pais</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #020706;
+      --panel: #0d1420;
+      --panel-2: #101a29;
+      --line: #233047;
+      --text: #e8f2f4;
+      --muted: #8d9aa8;
+      --cyan: #28f0e4;
+      --cyan-soft: rgba(40, 240, 228, .14);
+      --green: #28ef9f;
+      --green-soft: rgba(40, 239, 159, .16);
+      --pink: #ff5e9f;
+      --amber: #f6b74a;
+      --red: #ff6f6f;
+      --shadow: 0 18px 70px rgba(0, 0, 0, .42);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(25, 130, 111, .18), transparent 36rem),
+        linear-gradient(180deg, #010504 0%, var(--bg) 100%);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .site-back-link {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 10;
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 0 12px;
+      border: 1px solid rgba(40, 240, 228, .28);
+      border-radius: 999px;
+      background: rgba(2, 7, 6, .82);
+      color: #dffcff;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: .72rem;
+      font-weight: 850;
+      text-decoration: none;
+      text-transform: uppercase;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .32);
+    }
+
+    .site-back-link:hover {
+      border-color: rgba(40, 240, 228, .72);
+      background: #101b27;
+    }
+
+    main {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 18px 14px 24px;
+    }
+
+    header {
+      display: grid;
+      place-items: center;
+      gap: 3px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      color: #dffcff;
+      font-size: clamp(1.8rem, 4vw, 3.25rem);
+      line-height: 1;
+      text-transform: uppercase;
+      text-shadow: 0 0 18px rgba(40, 240, 228, .6);
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: .82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .subtitle::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 14px var(--green);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-rows: auto minmax(240px, 1fr) auto;
+      gap: 12px;
+    }
+
+    .tables {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, .8fr);
+      gap: 12px;
+      position: relative;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(16, 26, 41, .98), rgba(10, 16, 26, .98));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 32px;
+      padding: 8px 12px 4px;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: .9rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #f3f8ff;
+    }
+
+    .status-pill {
+      min-width: 104px;
+      padding: 4px 8px;
+      border: 1px solid rgba(141, 154, 168, .22);
+      border-radius: 999px;
+      color: var(--muted);
+      text-align: center;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: .7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .status-pill.match {
+      border-color: rgba(40, 239, 159, .42);
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .status-pill.skip {
+      border-color: rgba(255, 111, 111, .4);
+      color: var(--red);
+      background: rgba(255, 111, 111, .1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: clamp(.78rem, 1.7vw, .97rem);
+    }
+
+    th, td {
+      height: 28px;
+      padding: 4px 10px;
+      border-bottom: 1px solid rgba(141, 154, 168, .09);
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    td {
+      color: #eff5f7;
+      font-weight: 800;
+    }
+
+    tr.focus {
+      background: var(--cyan-soft);
+      box-shadow: inset 4px 0 0 var(--cyan);
+    }
+
+    tr.joined {
+      background: var(--green-soft);
+    }
+
+    tr.rejected {
+      background: rgba(255, 111, 111, .08);
+      color: rgba(255, 255, 255, .65);
+    }
+
+    tr.rejected td {
+      color: rgba(232, 242, 244, .58);
+    }
+
+    .storage {
+      min-height: 250px;
+      position: relative;
+    }
+
+    .storage table td:nth-child(3),
+    .storage table th:nth-child(3) {
+      color: var(--green);
+    }
+
+    .empty-row td {
+      color: rgba(141, 154, 168, .38);
+      font-style: italic;
+      font-weight: 700;
+    }
+
+    .code-panel {
+      padding: 14px 0 12px;
+    }
+
+    .code {
+      margin: 0;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: clamp(.82rem, 2vw, 1rem);
+      line-height: 1.85;
+      font-weight: 900;
+      counter-reset: line;
+    }
+
+    .code-line {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      min-height: 32px;
+      padding-right: 12px;
+      position: relative;
+    }
+
+    .code-line::before {
+      counter-increment: line;
+      content: counter(line);
+      color: rgba(141, 154, 168, .36);
+      text-align: right;
+      padding-right: 12px;
+    }
+
+    .code-line.active {
+      background: var(--cyan-soft);
+      box-shadow: inset 5px 0 0 var(--cyan);
+    }
+
+    .kw-blue { color: #4797ff; }
+    .kw-pink { color: #ff6bc2; }
+    .kw-cyan { color: #25e8d8; }
+    .kw-amber { color: var(--amber); }
+    .string { color: #ff6f6f; }
+    .id { color: #f5f7fb; }
+    .dim { color: #a9b3c0; }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .step-note {
+      min-height: 40px;
+      color: #d5e2e7;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: .86rem;
+      font-weight: 750;
+    }
+
+    .buttons {
+      display: inline-flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    button {
+      width: 42px;
+      height: 38px;
+      border: 1px solid rgba(40, 240, 228, .28);
+      border-radius: 8px;
+      background: #101b27;
+      color: #eaffff;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 900;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, .28);
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+
+    button:hover {
+      border-color: rgba(40, 240, 228, .72);
+      background: #132435;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: .38;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .meter {
+      justify-self: end;
+      width: min(260px, 100%);
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(141, 154, 168, .16);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+      box-shadow: 0 0 18px rgba(40, 240, 228, .5);
+      transition: width .22s ease;
+    }
+
+    .match-line {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .match-line line {
+      stroke: var(--red);
+      stroke-width: 2.5;
+      stroke-dasharray: 7 7;
+      filter: drop-shadow(0 0 6px rgba(255, 111, 111, .55));
+    }
+
+    .match-line line.join-ok {
+      stroke: var(--green);
+      filter: drop-shadow(0 0 8px rgba(40, 239, 159, .75));
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px 12px 12px;
+    }
+
+    .badge {
+      border: 1px solid rgba(141, 154, 168, .24);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: #c7d3d8;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: .72rem;
+      font-weight: 850;
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .badge strong {
+      color: var(--green);
+    }
+
+    @media (max-width: 760px) {
+      main {
+        padding: 10px 8px 14px;
+      }
+
+      .tables {
+        grid-template-columns: 1fr;
+      }
+
+      .storage {
+        min-height: 220px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .buttons {
+        order: -1;
+      }
+
+      .meter {
+        justify-self: stretch;
+        width: 100%;
+      }
+
+      .status-pill {
+        min-width: 88px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="site-back-link" href="index.html">&larr; Volver al inicio</a>
+  <main>
+    <header>
+      <h1>INNER JOIN</h1>
+      <div class="subtitle">Actor + Pa&iacute;s</div>
+    </header>
+
+    <section class="workspace" aria-label="Visualizacion interactiva de INNER JOIN">
+      <div class="tables" id="tablesArea">
+        <svg class="match-line" id="matchLine" aria-hidden="true"></svg>
+
+        <article class="panel">
+          <div class="panel-title">
+            <span>TABLE: ACTOR</span>
+            <span class="status-pill" id="actorStatus">waiting</span>
+          </div>
+          <table aria-label="Tabla Actor">
+            <thead>
+              <tr>
+                <th>ActorID</th>
+                <th>Apellido</th>
+                <th>Nombre</th>
+                <th>PaisID</th>
+              </tr>
+            </thead>
+            <tbody id="actorRows"></tbody>
+          </table>
+        </article>
+
+        <article class="panel">
+          <div class="panel-title">
+            <span>TABLE: PAIS</span>
+            <span class="status-pill" id="paisStatus">waiting</span>
+          </div>
+          <table aria-label="Tabla Pais">
+            <thead>
+              <tr>
+                <th>PaisID</th>
+                <th>Pais</th>
+              </tr>
+            </thead>
+            <tbody id="paisRows"></tbody>
+          </table>
+        </article>
+      </div>
+
+      <article class="panel storage">
+        <div class="panel-title">
+          <span>VIRTUAL STORAGE: JOIN_RESULT</span>
+          <span class="status-pill match" id="joinCount">0 rows</span>
+        </div>
+        <table aria-label="Resultado del join">
+          <thead>
+            <tr>
+              <th>Apellido</th>
+              <th>Nombre</th>
+              <th>Pais</th>
+            </tr>
+          </thead>
+          <tbody id="resultRows"></tbody>
+        </table>
+        <div class="badges" id="badges"></div>
+      </article>
+
+      <article class="panel code-panel">
+        <pre class="code" aria-label="Consulta SQL"><span class="code-line" data-line="1"><span><span class="kw-blue">SELECT</span> <span class="id">a.Apellido</span>,</span></span><span class="code-line" data-line="1"><span>       <span class="id">a.Nombre</span>,</span></span><span class="code-line" data-line="1"><span>       <span class="id">p.Pais</span></span></span><span class="code-line" data-line="2"><span><span class="kw-pink">FROM</span> <span class="id">Actor</span> <span class="dim">a</span></span></span><span class="code-line" data-line="3"><span><span class="kw-cyan">INNER JOIN</span> <span class="id">Pais</span> <span class="dim">p</span> <span class="kw-cyan">ON</span> <span class="id">p.PaisID</span> = <span class="id">a.PaisID</span></span></span><span class="code-line" data-line="4"><span><span class="kw-amber">WHERE</span> <span class="id">p.Pais</span> = <span class="string">'Argentina'</span>;</span></span></pre>
+      </article>
+    </section>
+
+    <section class="controls" aria-label="Controles">
+      <div class="step-note" id="stepNote">SELECT define las columnas que se veran al final.</div>
+      <div class="buttons">
+        <button id="resetBtn" type="button" title="Reiniciar" aria-label="Reiniciar">↺</button>
+        <button id="prevBtn" type="button" title="Anterior" aria-label="Anterior">‹</button>
+        <button id="playBtn" type="button" title="Reproducir" aria-label="Reproducir">▶</button>
+        <button id="nextBtn" type="button" title="Siguiente" aria-label="Siguiente">›</button>
+      </div>
+      <div class="meter" aria-hidden="true"><div class="meter-fill" id="meterFill"></div></div>
+    </section>
+  </main>
+
+  <script>
+    const actors = [
+      { ActorID: 1, Apellido: "Darin", Nombre: "Ricardo", PaisID: 1 },
+      { ActorID: 2, Apellido: "Francella", Nombre: "Guillermo", PaisID: 1 },
+      { ActorID: 3, Apellido: "Pascal", Nombre: "Pedro", PaisID: 2 },
+      { ActorID: 4, Apellido: "Banderas", Nombre: "Antonio", PaisID: 3 },
+      { ActorID: 5, Apellido: "Roth", Nombre: "Cecilia", PaisID: 1 },
+      { ActorID: 6, Apellido: "Torres", Nombre: "Diego", PaisID: 99 }
+    ];
+
+    const paises = [
+      { PaisID: 1, Pais: "Argentina" },
+      { PaisID: 2, Pais: "Chile" },
+      { PaisID: 3, Pais: "Espana" },
+      { PaisID: 4, Pais: "Mexico" }
+    ];
+
+    const comparisons = [];
+    actors.forEach((actor, actorIndex) => {
+      paises.forEach((pais, paisIndex) => {
+        const joins = actor.PaisID === pais.PaisID;
+        const passesWhere = pais.Pais === "Argentina";
+        comparisons.push({ actor, pais, actorIndex, paisIndex, joins, passesWhere });
+      });
+    });
+
+    const introSteps = [
+      { phase: "select", note: "SELECT define las columnas que se veran al final." },
+      { phase: "from", note: "FROM Actor a toma cada fila de Actor como tabla izquierda." }
+    ];
+
+    const steps = [
+      ...introSteps,
+      ...comparisons.map(item => ({ phase: "join", ...item })),
+      { phase: "done", note: "INNER JOIN conserva las coincidencias; WHERE deja solo las que tienen Pais = 'Argentina'." }
+    ];
+
+    let stepIndex = 0;
+    let playing = false;
+    let timer = null;
+
+    const actorRows = document.querySelector("#actorRows");
+    const paisRows = document.querySelector("#paisRows");
+    const resultRows = document.querySelector("#resultRows");
+    const actorStatus = document.querySelector("#actorStatus");
+    const paisStatus = document.querySelector("#paisStatus");
+    const joinCount = document.querySelector("#joinCount");
+    const badges = document.querySelector("#badges");
+    const stepNote = document.querySelector("#stepNote");
+    const meterFill = document.querySelector("#meterFill");
+    const matchLine = document.querySelector("#matchLine");
+    const tablesArea = document.querySelector("#tablesArea");
+    const playBtn = document.querySelector("#playBtn");
+    const prevBtn = document.querySelector("#prevBtn");
+    const nextBtn = document.querySelector("#nextBtn");
+    const resetBtn = document.querySelector("#resetBtn");
+
+    function renderBaseTables() {
+      actorRows.innerHTML = actors.map((actor, index) => `
+        <tr data-actor="${index}">
+          <td>${actor.ActorID}</td>
+          <td>${actor.Apellido}</td>
+          <td>${actor.Nombre}</td>
+          <td>${actor.PaisID}</td>
+        </tr>
+      `).join("");
+
+      paisRows.innerHTML = paises.map((pais, index) => `
+        <tr data-pais="${index}">
+          <td>${pais.PaisID}</td>
+          <td>${pais.Pais}</td>
+        </tr>
+      `).join("");
+    }
+
+    function rowsUntilCurrent() {
+      const currentComparisons = steps
+        .slice(0, stepIndex + 1)
+        .filter(step => step.phase === "join" && step.joins && step.passesWhere);
+
+      return currentComparisons.map(step => ({
+        Apellido: step.actor.Apellido,
+        Nombre: step.actor.Nombre,
+        Pais: step.pais.Pais
+      }));
+    }
+
+    function renderResults(rows) {
+      if (!rows.length) {
+        resultRows.innerHTML = `
+          <tr class="empty-row">
+            <td colspan="3">Esperando coincidencias que pasen el WHERE...</td>
+          </tr>
+        `;
+      } else {
+        resultRows.innerHTML = rows.map(row => `
+          <tr class="joined">
+            <td>${row.Apellido}</td>
+            <td>${row.Nombre}</td>
+            <td>${row.Pais}</td>
+          </tr>
+        `).join("");
+      }
+
+      joinCount.textContent = `${rows.length} row${rows.length === 1 ? "" : "s"}`;
+      badges.innerHTML = rows.map(row => `
+        <span class="badge">${row.Apellido}, ${row.Nombre} -> <strong>${row.Pais}</strong></span>
+      `).join("");
+    }
+
+    function setActiveCodeLine(phase) {
+      document.querySelectorAll(".code-line").forEach(line => line.classList.remove("active"));
+      const map = { select: "1", from: "2", join: "3", done: "4" };
+      const target = document.querySelector(`.code-line[data-line="${map[phase]}"]`);
+      if (target) target.classList.add("active");
+    }
+
+    function clearFocus() {
+      document.querySelectorAll("tr").forEach(row => row.classList.remove("focus", "joined", "rejected"));
+      matchLine.innerHTML = "";
+    }
+
+    function drawLine(actorIndex, paisIndex, joins) {
+      const actorRow = document.querySelector(`[data-actor="${actorIndex}"]`);
+      const paisRow = document.querySelector(`[data-pais="${paisIndex}"]`);
+      if (!actorRow || !paisRow) return;
+
+      const areaRect = tablesArea.getBoundingClientRect();
+      const actorRect = actorRow.getBoundingClientRect();
+      const paisRect = paisRow.getBoundingClientRect();
+
+      const x1 = actorRect.right - areaRect.left - 4;
+      const y1 = actorRect.top - areaRect.top + actorRect.height / 2;
+      const x2 = paisRect.left - areaRect.left + 4;
+      const y2 = paisRect.top - areaRect.top + paisRect.height / 2;
+
+      matchLine.setAttribute("viewBox", `0 0 ${areaRect.width} ${areaRect.height}`);
+      matchLine.innerHTML = `<line class="${joins ? "join-ok" : ""}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="opacity:${joins ? 1 : .28}"></line>`;
+    }
+
+    function renderStep() {
+      const step = steps[stepIndex];
+      clearFocus();
+
+      actorStatus.textContent = "waiting";
+      paisStatus.textContent = "waiting";
+      actorStatus.className = "status-pill";
+      paisStatus.className = "status-pill";
+
+      if (step.phase === "select" || step.phase === "from") {
+        stepNote.textContent = step.note;
+      }
+
+      if (step.phase === "join") {
+        const actorRow = document.querySelector(`[data-actor="${step.actorIndex}"]`);
+        const paisRow = document.querySelector(`[data-pais="${step.paisIndex}"]`);
+        if (actorRow) actorRow.classList.add(step.joins ? "joined" : "focus");
+        if (paisRow) paisRow.classList.add(step.joins ? "joined" : "rejected");
+        drawLine(step.actorIndex, step.paisIndex, step.joins);
+
+        actorStatus.textContent = `PaisID ${step.actor.PaisID}`;
+        paisStatus.textContent = `PaisID ${step.pais.PaisID}`;
+
+        if (step.joins && step.passesWhere) {
+          actorStatus.className = "status-pill match";
+          paisStatus.className = "status-pill match";
+          stepNote.textContent = `${step.actor.Apellido} coincide con ${step.pais.Pais} y pasa el WHERE: se agrega al resultado.`;
+        } else if (step.joins) {
+          actorStatus.className = "status-pill skip";
+          paisStatus.className = "status-pill skip";
+          stepNote.textContent = `${step.actor.Apellido} coincide por INNER JOIN, pero WHERE descarta ${step.pais.Pais}.`;
+        } else {
+          actorStatus.className = "status-pill skip";
+          paisStatus.className = "status-pill skip";
+          stepNote.textContent = `${step.actor.Apellido} no coincide con ${step.pais.Pais}: esa combinacion no entra.`;
+        }
+      }
+
+      if (step.phase === "done") {
+        stepNote.textContent = step.note;
+      }
+
+      setActiveCodeLine(step.phase);
+      renderResults(rowsUntilCurrent());
+      meterFill.style.width = `${(stepIndex / (steps.length - 1)) * 100}%`;
+      prevBtn.disabled = stepIndex === 0;
+      nextBtn.disabled = stepIndex === steps.length - 1;
+    }
+
+    function nextStep() {
+      if (stepIndex < steps.length - 1) {
+        stepIndex += 1;
+        renderStep();
+      } else {
+        stopPlay();
+      }
+    }
+
+    function prevStep() {
+      if (stepIndex > 0) {
+        stepIndex -= 1;
+        renderStep();
+      }
+    }
+
+    function reset() {
+      stopPlay();
+      stepIndex = 0;
+      renderStep();
+    }
+
+    function startPlay() {
+      playing = true;
+      playBtn.textContent = "❚❚";
+      playBtn.setAttribute("aria-label", "Pausar");
+      timer = window.setInterval(nextStep, 900);
+    }
+
+    function stopPlay() {
+      playing = false;
+      playBtn.textContent = "▶";
+      playBtn.setAttribute("aria-label", "Reproducir");
+      if (timer) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    nextBtn.addEventListener("click", nextStep);
+    prevBtn.addEventListener("click", prevStep);
+    resetBtn.addEventListener("click", reset);
+    playBtn.addEventListener("click", () => playing ? stopPlay() : startPlay());
+    window.addEventListener("resize", renderStep);
+
+    renderBaseTables();
+    renderStep();
+  </script>
+</body>
+</html>

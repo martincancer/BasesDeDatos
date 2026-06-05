@@ -15,6 +15,9 @@
   --blue: #60a5fa;
   --blue-bg: rgba(96,165,250,0.12);
   --blue-border: rgba(96,165,250,0.24);
+  --cyan: #2dd4bf;
+  --cyan-bg: rgba(45,212,191,0.12);
+  --cyan-border: rgba(45,212,191,0.24);
   --amber: #fbbf24;
   --amber-bg: rgba(251,191,36,0.12);
   --amber-border: rgba(251,191,36,0.24);
@@ -404,8 +407,18 @@ section {
   box-shadow: inset 0 0 0 1px rgba(251,191,36,0.08);
 }
 
+.class-card.demo-card {
+  border-color: var(--cyan-border);
+  background: linear-gradient(180deg, rgba(45,212,191,0.08), var(--surface) 42%);
+  box-shadow: inset 0 0 0 1px rgba(45,212,191,0.08);
+}
+
 .evaluation-card .class-header h3 {
   color: #fde68a;
+}
+
+.demo-card .class-header h3 {
+  color: #99f6e4;
 }
 
 .class-header {
@@ -442,6 +455,12 @@ section {
   background: var(--amber-bg);
   color: var(--amber);
   border: 1px solid var(--amber-border);
+}
+
+.chip.demo {
+  background: var(--cyan-bg);
+  color: var(--cyan);
+  border: 1px solid var(--cyan-border);
 }
 
 .chip.soft {
@@ -483,6 +502,10 @@ section {
   background: var(--amber);
 }
 
+.demo-card .topic-list li::before {
+  background: var(--cyan);
+}
+
 .class-footer {
   display: flex;
   flex-wrap: wrap;
@@ -505,6 +528,11 @@ section {
 .evaluation-card .eval-link {
   background: #d97706;
   color: #fff7ed;
+}
+
+.demo-card .demo-link {
+  background: #0d9488;
+  color: #ecfeff;
 }
 
 .notice-card.info {
