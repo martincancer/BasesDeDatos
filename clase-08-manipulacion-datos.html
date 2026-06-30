@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Funciones de manipulación de datos en SQL Server</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-08-manipulacion-datos.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNzk1ODk0" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-07-inner-join-sql-server.html">&larr; Clase anterior</a>
+<a class="lesson-nav-btn next" href="clase-09-funciones-agrupacion.html">Siguiente clase &rarr;</a>
+
+<div class="container">
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server &middot; Clase interactiva</div>
+  <h1>Funciones de manipulaci&oacute;n<br><em>y transformaci&oacute;n de datos</em></h1>
+  <p class="subtitle">En esta clase trabajamos con funciones de manipulaci&oacute;n de datos, &uacute;tiles para convertir tipos, extraer partes de un valor, formatear fechas y realizar c&aacute;lculos dentro de las consultas.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:17%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('intro',0)">General</button>
+  <button class="nav-btn" onclick="showTab('texto',1)">Texto</button>
+  <button class="nav-btn" onclick="showTab('fechas',2)">Fecha y hora</button>
+  <button class="nav-btn" onclick="showTab('numericas',3)">Num&eacute;ricas</button>
+  <button class="nav-btn" onclick="showTab('conversiones',4)">Conversiones</button>
+  <button class="nav-btn" onclick="showTab('resumen',5)">Resumen</button>
+  <button class="nav-btn" onclick="showTab('quiz',6)">Quiz</button>
+</nav>
+
+<div class="section active" id="tab-intro">
+  <h2>Concepto general</h2>
+  <p class="section-intro">Las funciones de manipulaci&oacute;n de datos permiten transformar, convertir, formatear y procesar informaci&oacute;n almacenada en una base de datos. Son muy utilizadas en las consultas <code>SELECT</code>, as&iacute; como en cl&aacute;usulas como <code>WHERE</code>.</p>
+
+  <div class="concepto">
+    Las funciones de manipulaci&oacute;n de datos son herramientas incorporadas en SQL Server que permiten procesar, transformar y adaptar la informaci&oacute;n almacenada en las bases de datos durante la ejecuci&oacute;n de una consulta. A diferencia de las operaciones de inserci&oacute;n, actualizaci&oacute;n o eliminaci&oacute;n, estas funciones no modifican los valores almacenados en las tablas: generan resultados derivados a partir de ellos.
+  </div>
+
+  <h2>Clasificaci&oacute;n general</h2>
+  <p class="section-intro">En SQL Server, las funciones de manipulaci&oacute;n de datos suelen agruparse en diferentes categor&iacute;as:</p>
+
+  <ul class="classification-list">
+    <li>
+      <h3>Funciones de texto</h3>
+      Permiten trabajar con cadenas de caracteres: concatenar, convertir a may&uacute;sculas o min&uacute;sculas, buscar, extraer fragmentos o medir su longitud.
+      <hr>
+    </li>
+    <li>
+      <h3>Funciones num&eacute;ricas</h3>
+      Se utilizan para realizar c&aacute;lculos matem&aacute;ticos, redondeos y otras operaciones sobre valores num&eacute;ricos.
+      <hr>
+    </li>
+    <li>
+      <h3>Funciones de fecha y hora</h3>
+      Facilitan el manejo de fechas, horarios, intervalos de tiempo y c&aacute;lculos temporales.
+      <hr>
+    </li>
+    <li>
+      <h3>Funciones de conversi&oacute;n</h3>
+      Permiten transformar un dato de un tipo a otro, por ejemplo convertir un n&uacute;mero a texto o una cadena a fecha.
+    </li>
+  </ul>
+</div>
+
+<div class="section" id="tab-texto">
+  <h2>Funciones de texto en SQL Server</h2>
+  <p class="section-intro">Las funciones de texto permiten trabajar con datos de tipo car&aacute;cter (<code>CHAR</code>, <code>VARCHAR</code>, <code>NCHAR</code>, <code>NVARCHAR</code>, entre otros). Son utilizadas para modificar, analizar, combinar y formatear cadenas de texto dentro de las consultas SQL.</p>
+
+  <div class="concepto">
+    Estas funciones resultan especialmente &uacute;tiles cuando se trabaja con nombres de personas, direcciones, correos electr&oacute;nicos, c&oacute;digos alfanum&eacute;ricos y cualquier otro dato almacenado como texto.
+  </div>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Funci&oacute;n</th>
+        <th>Significado</th>
+        <th>Ejemplo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>+</code></td>
+        <td>Concatena cadenas de texto cuando los tipos son compatibles.</td>
+        <td><code>Apellido + ', ' + Nombre</code></td>
+      </tr>
+      <tr>
+        <td><code>CONCAT</code></td>
+        <td>Concatena varios valores de distinto tipo sin necesidad de conversi&oacute;n manual.</td>
+        <td><code>CONCAT(Apellido, ', ', Nombre)</code></td>
+      </tr>
+      <tr>
+        <td><code>UPPER</code></td>
+        <td>Transforma texto a may&uacute;sculas.</td>
+        <td><code>UPPER(Apellido)</code></td>
+      </tr>
+      <tr>
+        <td><code>LOWER</code></td>
+        <td>Transforma texto a min&uacute;sculas.</td>
+        <td><code>LOWER(Apellido)</code></td>
+      </tr>
+      <tr>
+        <td><code>LEN</code></td>
+        <td>Devuelve la longitud de una cadena.</td>
+        <td><code>LEN(Apellido)</code></td>
+      </tr>
+      <tr>
+        <td><code>SUBSTRING</code></td>
+        <td>Extrae una parte del texto: texto, posici&oacute;n inicial y cantidad de caracteres.</td>
+        <td><code>SUBSTRING(Apellido, 1, 5)</code></td>
+      </tr>
+      <tr>
+        <td><code>CHARINDEX</code></td>
+        <td>Devuelve la posici&oacute;n de un car&aacute;cter o subcadena dentro de un texto.</td>
+        <td><code>CHARINDEX('o', Apellido)</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="content-card">
+    <div class="content-card-header">Concatenar con el operador +</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT Apellido + ', ' + Nombre
+FROM Director;</code></pre>
+      <p class="note-line">Si intent&aacute;s concatenar texto con una fecha sin convertirla, SQL Server puede devolver error. En ese caso conviene usar <code>CAST</code> o <code>CONCAT</code>.</p>
+      <pre class="sql-block compact"><code>SELECT Apellido + ',' + Nombre + ' ' + CAST(FechaNac AS VARCHAR(10))
+FROM Director;</code></pre>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplos individuales</div>
+    <div class="content-card-body">
+      <pre class="sql-block compact"><code>SELECT CONCAT(Apellido, ', ', Nombre) FROM Director;
+SELECT UPPER(Apellido) FROM Director;
+SELECT LOWER(Apellido) FROM Director;
+SELECT LEN(Apellido), Apellido FROM Director;
+SELECT SUBSTRING(Apellido, 1, 5), Apellido FROM Director;
+SELECT CHARINDEX('o', Apellido), Apellido FROM Director;</code></pre>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplo combinado</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT
+    Apellido,
+    UPPER(Apellido) AS MAYUSCULAS,
+    LOWER(Apellido) AS MINUSCULAS,
+    LEN(Apellido) AS LONGITUD_CADENA,
+    SUBSTRING(Apellido, 1, 5) AS CADENA_PARCIAL,
+    CHARINDEX('A', Apellido) AS POSICION_PRIMERA_A
+FROM Director;</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="tab-fechas">
+  <h2>Funciones de fecha y hora</h2>
+  <p class="section-intro">Las funciones de fecha permiten extraer partes de una fecha, calcular diferencias, sumar o restar intervalos y armar formatos m&aacute;s legibles para el usuario.</p>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Funci&oacute;n</th>
+        <th>Significado</th>
+        <th>Ejemplo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>YEAR</code></td>
+        <td>Obtiene el a&ntilde;o de una fecha.</td>
+        <td><code>YEAR(FechaNac)</code></td>
+      </tr>
+      <tr>
+        <td><code>MONTH</code></td>
+        <td>Obtiene el mes de una fecha.</td>
+        <td><code>MONTH(FechaNac)</code></td>
+      </tr>
+      <tr>
+        <td><code>DAY</code></td>
+        <td>Obtiene el d&iacute;a de una fecha.</td>
+        <td><code>DAY(FechaNac)</code></td>
+      </tr>
+      <tr>
+        <td><code>DATENAME</code></td>
+        <td>Devuelve el nombre del mes o del d&iacute;a de la semana.</td>
+        <td><code>DATENAME(month, FechaNac)</code></td>
+      </tr>
+      <tr>
+        <td><code>DATEADD</code></td>
+        <td>Suma o resta un intervalo a una fecha.</td>
+        <td><code>DATEADD(year, 1, FechaNac)</code></td>
+      </tr>
+      <tr>
+        <td><code>DATEDIFF</code></td>
+        <td>Calcula la diferencia entre dos fechas en a&ntilde;os, meses o d&iacute;as.</td>
+        <td><code>DATEDIFF(year, FechaNac, GETDATE())</code></td>
+      </tr>
+      <tr>
+        <td><code>GETDATE()</code></td>
+        <td>Devuelve la fecha y hora actual del servidor.</td>
+        <td><code>GETDATE()</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="content-card">
+    <div class="content-card-header">Extracci&oacute;n y transformaci&oacute;n de fechas</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT
+    FechaNac,
+    CAST(FechaNac AS DATE) AS solo_fecha,
+    YEAR(FechaNac) AS anio,
+    MONTH(FechaNac) AS mes,
+    DAY(FechaNac) AS dia,
+    DATENAME(month, FechaNac) AS nombre_mes,
+    DATENAME(weekday, FechaNac) AS nombre_dia,
+    DATEADD(year, 1, FechaNac) AS un_anio_mas,
+    DATEDIFF(year, FechaNac, GETDATE()) AS anios_hasta_hoy,
+    DATEDIFF(month, FechaNac, GETDATE()) AS meses_hasta_hoy,
+    DATEDIFF(day, FechaNac, GETDATE()) AS dias_hasta_hoy,
+    CONVERT(varchar, FechaNac, 106) AS Fecha_Abreviada,
+    CONCAT(
+        DATENAME(weekday, FechaNac), ' ',
+        CAST(DAY(FechaNac) AS CHAR(2)), ' de ',
+        DATENAME(month, FechaNac), ' de ',
+        CAST(YEAR(FechaNac) AS CHAR(4))
+    ) AS fecha_larga
+FROM Director;</code></pre>
+      <p class="note-line"><code>CAST(FechaNac AS DATE)</code> convierte un valor <code>DATETIME</code> a solo fecha. <code>CONVERT(..., 106)</code> muestra la fecha en formato abreviado seg&uacute;n el estilo elegido.</p>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Calcular edad a partir de la fecha de nacimiento</div>
+    <div class="content-card-body">
+      <pre class="sql-block compact"><code>-- Por diferencia de a&ntilde;os (puede fallar si a&uacute;n no cumpli&oacute; a&ntilde;os)
+SELECT CONCAT(Apellido, ', ', Nombre), FechaNac,
+       DATEDIFF(YEAR, FechaNac, GETDATE()) AS EDAD
+FROM Director;</code></pre>
+      <pre class="sql-block compact"><code>-- Por diferencia de d&iacute;as (manera m&aacute;s correcta)
+SELECT CONCAT(Apellido, ', ', Nombre), FechaNac,
+       CONVERT(INT, (DATEDIFF(day, FechaNac, GETDATE()) / 365.25)) AS EDAD
+FROM Director;</code></pre>
+    </div>
+  </div>
+
+  <div class="tip warn">
+    <span class="tip-icon"></span>
+    <div><code>DATEDIFF(YEAR, ...)</code> cuenta a&ntilde;os calendario completos, no siempre la edad real. Si la persona todav&iacute;a no cumpli&oacute; a&ntilde;os en el a&ntilde;o actual, el resultado puede quedar desfasado en uno.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-numericas">
+  <h2>Funciones num&eacute;ricas en SQL Server</h2>
+  <p class="section-intro">Las funciones num&eacute;ricas permiten realizar operaciones matem&aacute;ticas y transformaciones sobre datos de tipo num&eacute;rico. Son ampliamente utilizadas para efectuar c&aacute;lculos, redondeos y an&aacute;lisis de informaci&oacute;n dentro de las consultas SQL.</p>
+
+  <div class="concepto">
+  En SQL es posible realizar c&aacute;lculos entre columnas num&eacute;ricas con cualquier operador aritm&eacute;tico: <code>+</code>, <code>-</code>, <code>*</code> y <code>/</code>.
+  </div>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Funci&oacute;n / operador</th>
+        <th>Significado</th>
+        <th>Ejemplo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>+ - * /</code></td>
+        <td>Operadores aritm&eacute;ticos para calcular entre columnas o valores.</td>
+        <td><code>Recaudacion - Presupuesto</code></td>
+      </tr>
+      <tr>
+        <td><code>%</code></td>
+        <td>Devuelve el resto de una divisi&oacute;n.</td>
+        <td><code>10 % 4</code> devuelve <code>2</code></td>
+      </tr>
+      <tr>
+        <td><code>ABS()</code></td>
+        <td>Obtiene el valor absoluto de un n&uacute;mero.</td>
+        <td><code>ABS(-123)</code></td>
+      </tr>
+      <tr>
+        <td><code>ROUND()</code></td>
+        <td>Redondea un n&uacute;mero a una cantidad de decimales indicada.</td>
+        <td><code>ROUND(1.327532, 2)</code></td>
+      </tr>
+      <tr>
+        <td><code>PI()</code></td>
+        <td>Devuelve el valor de &pi;.</td>
+        <td><code>ROUND(PI(), 2)</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="content-card">
+    <div class="content-card-header">C&aacute;lculos entre columnas</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT *, Recaudacion - Presupuesto
+FROM Pelicula;</code></pre>
+      <p class="note-line">As&iacute; pod&eacute;s obtener la diferencia entre recaudaci&oacute;n y presupuesto para cada pel&iacute;cula.</p>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Operador m&oacute;dulo y ejemplos num&eacute;ricos</div>
+    <div class="content-card-body">
+      <pre class="sql-block compact"><code>SELECT 10 % 5;   -- retorna 0
+SELECT 10 % 4;   -- retorna 2
+
+SELECT ABS(-123);
+
+SELECT 134.25 / 7;
+SELECT ROUND(1.327532, 2);
+SELECT ROUND(PI(), 2);
+SELECT ROUND(1.265853, 2);</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="tab-conversiones">
+  <h2>Funciones de conversi&oacute;n</h2>
+  <p class="section-intro"><code>CAST</code>, <code>CONVERT</code> y <code>FORMAT</code> permiten transformar un valor de un tipo de dato a otro o mostrarlo con un formato m&aacute;s legible.</p>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Funci&oacute;n</th>
+        <th>Significado</th>
+        <th>Ejemplo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>CAST</code></td>
+        <td>Convierte un valor a otro tipo de dato.</td>
+        <td><code>CAST(FechaNac AS DATE)</code></td>
+      </tr>
+      <tr>
+        <td><code>CONVERT</code></td>
+        <td>Convierte un valor y permite indicar un estilo de formato.</td>
+        <td><code>CONVERT(varchar, FechaNac, 106)</code></td>
+      </tr>
+      <tr>
+        <td><code>FORMAT</code></td>
+        <td>Formatea un n&uacute;mero o fecha seg&uacute;n una m&aacute;scara.</td>
+        <td><code>FORMAT(1234567, 'N0')</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="content-card">
+    <div class="content-card-header">Conversiones de tipo</div>
+    <div class="content-card-body">
+      <pre class="sql-block compact"><code>SELECT CAST(FechaNac AS DATE) FROM Director;
+SELECT CONVERT(INT, 25.65);
+SELECT CONVERT(varchar, FechaNac, 106) FROM Director;
+SELECT CONVERT(varchar, FechaEstreno, 106) FROM Pelicula;
+SELECT FORMAT(1234567, 'N0');</code></pre>
+      <p class="note-line">El estilo <code>106</code> en <code>CONVERT</code> muestra la fecha como <code>dd mon yyyy</code>, por ejemplo <code>15 Jan 2024</code>.</p>
+    </div>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div><code>CAST</code> y <code>CONVERT</code> cumplen funciones similares. La diferencia principal es que <code>CONVERT</code> permite elegir un estilo de formato al convertir fechas o n&uacute;meros a texto.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-resumen">
+  <h2>Resumen de funciones</h2>
+  <p class="section-intro">Esta tabla resume las funciones principales de la clase para que te quede como machete visual r&aacute;pido al practicar en SQL Server.</p>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Categor&iacute;a</th>
+        <th>Funciones clave</th>
+        <th>Uso principal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Texto</td>
+        <td><code>CONCAT</code>, <code>UPPER</code>, <code>LOWER</code>, <code>LEN</code>, <code>SUBSTRING</code>, <code>CHARINDEX</code></td>
+        <td>Combinar, transformar y analizar cadenas.</td>
+      </tr>
+      <tr>
+        <td>Fecha y hora</td>
+        <td><code>YEAR</code>, <code>MONTH</code>, <code>DAY</code>, <code>DATENAME</code>, <code>DATEADD</code>, <code>DATEDIFF</code></td>
+        <td>Extraer partes, calcular diferencias y sumar intervalos.</td>
+      </tr>
+      <tr>
+        <td>Num&eacute;ricas</td>
+        <td><code>ABS</code>, <code>ROUND</code>, <code>%</code>, operadores aritm&eacute;ticos</td>
+        <td>Calcular, redondear y obtener restos de divisi&oacute;n.</td>
+      </tr>
+      <tr>
+        <td>Conversi&oacute;n</td>
+        <td><code>CAST</code>, <code>CONVERT</code>, <code>FORMAT</code></td>
+        <td>Cambiar tipos de dato y mostrar valores con formato.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip success">
+    <span class="tip-icon"></span>
+    <div>Record&aacute; que estas funciones no modifican la tabla: solo transforman el resultado de la consulta. Si necesit&aacute;s guardar el valor transformado, deber&aacute;s usar <code>UPDATE</code> o una vista.</div>
+  </div>
+
+  <p style="margin-top:18px"><a class="inline-link" href="index.html">Volver al inicio</a></p>
+</div>
+
+<div class="section" id="tab-quiz">
+  <h2>Quiz de Repaso</h2>
+  <p class="section-intro">Este quiz repasa concatenaci&oacute;n, fechas, conversiones y funciones num&eacute;ricas. La idea es comprobar si ya qued&oacute; clara la diferencia entre transformar datos en una consulta y modificar la tabla.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div class="score-num" id="score-num">0/0</div>
+    <div class="score-label" id="score-label">Resultado final</div>
+    <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+</div>
+
+<footer>
+  <div class="container">
+    Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/clase-08-manipulacion-datos.js"></script>
+
+</body>
+</html>

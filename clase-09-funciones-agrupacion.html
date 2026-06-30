@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Funciones de agrupación en SQL Server</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-09-funciones-agrupacion.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNzk1ODk0" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-08-manipulacion-datos.html">&larr; Clase anterior</a>
+
+<div class="container">
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server &middot; Clase interactiva</div>
+  <h1>Funciones de agrupaci&oacute;n<br><em>y resumen de datos</em></h1>
+  <p class="subtitle">En esta clase trabajamos con funciones de agrupaci&oacute;n para obtener totales, cantidades, promedios, m&aacute;ximos y m&iacute;nimos, y aprendemos a combinarlas con <code>GROUP BY</code> y <code>HAVING</code>.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:17%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('intro',0)">General</button>
+  <button class="nav-btn" onclick="showTab('funciones',1)">Funciones</button>
+  <button class="nav-btn" onclick="showTab('groupby',2)">GROUP BY</button>
+  <button class="nav-btn" onclick="showTab('having',3)">HAVING</button>
+  <button class="nav-btn" onclick="showTab('resumen',4)">Resumen</button>
+  <button class="nav-btn" onclick="showTab('quiz',5)">Quiz</button>
+</nav>
+
+<div class="section active" id="tab-intro">
+  <h2>Concepto general</h2>
+  <p class="section-intro">Las funciones de agrupaci&oacute;n en SQL permiten efectuar operaciones sobre un conjunto de resultados, devolviendo un &uacute;nico valor agregado para todos ellos. Es decir, nos permiten obtener totales, cantidades, medias, m&aacute;ximos, m&iacute;nimos, etc., sobre un conjunto de valores.</p>
+
+  <div class="concepto">
+    A diferencia de las funciones de manipulaci&oacute;n de datos, que transforman fila por fila, las funciones de agrupaci&oacute;n <strong>resumen</strong> muchas filas en un solo resultado. Cuando queremos ese resumen por categor&iacute;as (por g&eacute;nero, por pa&iacute;s, por director), entra en juego la cl&aacute;usula <code>GROUP BY</code>.
+  </div>
+
+  <h2>Funciones b&aacute;sicas</h2>
+  <p class="section-intro">Los gestores de bases de datos relacionales suelen soportar estas funciones de agrupaci&oacute;n:</p>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Funci&oacute;n</th>
+        <th>Descripci&oacute;n</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>COUNT</code></td>
+        <td>Devuelve la cantidad de filas o valores no nulos.</td>
+      </tr>
+      <tr>
+        <td><code>MIN</code></td>
+        <td>Devuelve el valor m&iacute;nimo de una columna.</td>
+      </tr>
+      <tr>
+        <td><code>MAX</code></td>
+        <td>Devuelve el valor m&aacute;ximo de una columna.</td>
+      </tr>
+      <tr>
+        <td><code>SUM</code></td>
+        <td>Suma los valores de una columna num&eacute;rica.</td>
+      </tr>
+      <tr>
+        <td><code>AVG</code></td>
+        <td>Devuelve el promedio de una columna num&eacute;rica.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>Estas funciones se aplican sobre columnas espec&iacute;ficas entre par&eacute;ntesis, excepto <code>COUNT</code>, que tambi&eacute;n puede usarse con <code>*</code> para contar filas.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-funciones">
+  <h2>Funciones de agrupaci&oacute;n</h2>
+  <p class="section-intro">Cada funci&oacute;n responde a una pregunta distinta sobre los datos. Todas se usan dentro del <code>SELECT</code> y, en muchos casos, conviene darles un alias con <code>AS</code>.</p>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Funci&oacute;n</th>
+        <th>Significado</th>
+        <th>Ejemplo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>COUNT(*)</code></td>
+        <td>Cuenta la cantidad total de filas del resultado.</td>
+        <td><code>COUNT(*) FROM Pelicula</code></td>
+      </tr>
+      <tr>
+        <td><code>COUNT(columna)</code></td>
+        <td>Cuenta valores no nulos de una columna.</td>
+        <td><code>COUNT(Presupuesto)</code></td>
+      </tr>
+      <tr>
+        <td><code>MIN()</code></td>
+        <td>Obtiene el valor m&iacute;nimo.</td>
+        <td><code>MIN(Presupuesto)</code></td>
+      </tr>
+      <tr>
+        <td><code>MAX()</code></td>
+        <td>Obtiene el valor m&aacute;ximo.</td>
+        <td><code>MAX(Recaudacion)</code></td>
+      </tr>
+      <tr>
+        <td><code>SUM()</code></td>
+        <td>Suma valores num&eacute;ricos.</td>
+        <td><code>SUM(Recaudacion)</code></td>
+      </tr>
+      <tr>
+        <td><code>AVG()</code></td>
+        <td>Calcula el promedio de valores num&eacute;ricos.</td>
+        <td><code>AVG(Presupuesto)</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplos individuales</div>
+    <div class="content-card-body">
+      <pre class="sql-block compact"><code>-- Cantidad de pel&iacute;culas en la tabla
+SELECT COUNT(*) FROM Pelicula;
+
+-- Presupuesto m&aacute;s bajo
+SELECT MIN(Presupuesto) FROM Pelicula;
+
+-- Recaudaci&oacute;n m&aacute;s alta
+SELECT MAX(Recaudacion) FROM Pelicula;
+
+-- Suma total de recaudaciones
+SELECT SUM(Recaudacion) FROM Pelicula;
+
+-- Promedio de presupuesto
+SELECT AVG(Presupuesto) FROM Pelicula;</code></pre>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Consulta con todas las funciones</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT
+    COUNT(Presupuesto) AS Cant_Sin_Presupuesto_Nulo,
+    COUNT(PeliculaID) AS Cant_Total,
+    MAX(Presupuesto) AS Maximo,
+    MIN(Presupuesto) AS Minimo,
+    AVG(Presupuesto) AS Promedio,
+    SUM(Recaudacion) AS Valor_Total
+FROM Pelicula;</code></pre>
+      <p class="note-line"><code>COUNT(Presupuesto)</code> no cuenta filas donde el presupuesto es <code>NULL</code>. <code>COUNT(PeliculaID)</code> cuenta todas las pel&iacute;culas con identificador.</p>
+    </div>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h3><code>COUNT(*)</code></h3>
+      <p class="note-line" style="margin-top:0">Cuenta todas las filas devueltas por la consulta, sin importar si alguna columna tiene <code>NULL</code>.</p>
+    </div>
+    <div class="compare-card">
+      <h3><code>COUNT(columna)</code></h3>
+      <p class="note-line" style="margin-top:0">Cuenta solo los valores no nulos de esa columna. Si hay <code>NULL</code>, esos registros no se incluyen en el conteo.</p>
+    </div>
+  </div>
+
+  <div class="tip warn">
+    <span class="tip-icon"></span>
+    <div><code>SUM</code> y <code>AVG</code> solo se pueden utilizar en columnas num&eacute;ricas. Si la columna tiene valores nulos, esos registros no participan del c&aacute;lculo.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-groupby">
+  <h2>Agrupando resultados con GROUP BY</h2>
+  <p class="section-intro">La cl&aacute;usula <code>GROUP BY</code> permite agrupar filas seg&uacute;n las columnas que se indiquen. Se suele utilizar junto con funciones de agrupaci&oacute;n para obtener datos resumidos por categor&iacute;a.</p>
+
+  <div class="concepto">
+    Cuando us&aacute;s <code>GROUP BY</code>, SQL Server devuelve un resultado por cada combinaci&oacute;n distinta de valores en las columnas indicadas. Si en el <code>SELECT</code> hay funciones de agrupaci&oacute;n y tambi&eacute;n columnas sin agregar, esas columnas <strong>deben</strong> aparecer en el <code>GROUP BY</code>.
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Cantidad de pel&iacute;culas por g&eacute;nero (por ID)</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT COUNT(*) AS Cantidad,
+       GeneroID
+FROM Pelicula
+GROUP BY GeneroID;</code></pre>
+      <p class="note-line">Agrupa por el identificador del g&eacute;nero. Cada fila del resultado representa un grupo distinto.</p>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Cantidad de pel&iacute;culas por nombre de g&eacute;nero</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT COUNT(p.PeliculaID) AS Cantidad,
+       g.Genero
+FROM Pelicula p
+INNER JOIN Genero g ON p.GeneroID = g.GeneroID
+GROUP BY g.Genero;</code></pre>
+      <p class="note-line">Ac&aacute; se combina un <code>INNER JOIN</code> con <code>GROUP BY</code> para mostrar el nombre del g&eacute;nero en lugar del ID.</p>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Resumen completo por g&eacute;nero</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT MAX(p.Presupuesto) AS Maximo,
+       MIN(p.Presupuesto) AS Minimo,
+       AVG(p.Presupuesto) AS Promedio,
+       SUM(p.Recaudacion) AS Total_Recaudacion,
+       COUNT(p.PeliculaID) AS Cantidad,
+       g.Genero
+FROM Pelicula p
+INNER JOIN Genero g ON g.GeneroID = p.GeneroID
+GROUP BY g.Genero;</code></pre>
+      <p class="note-line">Con una sola consulta pod&eacute;s ver el m&aacute;ximo, m&iacute;nimo, promedio, suma y cantidad de pel&iacute;culas de cada g&eacute;nero.</p>
+    </div>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>Si hay m&aacute;s de una columna sin agregar, todas deben listarse en <code>GROUP BY</code>, separadas por coma.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-having">
+  <h2>Cl&aacute;usula HAVING</h2>
+  <p class="section-intro">La cl&aacute;usula <code>HAVING</code> se utiliza junto con <code>GROUP BY</code> para filtrar grupos que cumplen ciertas condiciones de agrupaci&oacute;n. Es similar a <code>WHERE</code>, pero act&uacute;a sobre el resultado ya agrupado.</p>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h3><code>WHERE</code></h3>
+      <p class="note-line" style="margin-top:0">Filtra filas <strong>antes</strong> de agrupar. No puede usar funciones de agrupaci&oacute;n directamente.</p>
+    </div>
+    <div class="compare-card">
+      <h3><code>HAVING</code></h3>
+      <p class="note-line" style="margin-top:0">Filtra grupos <strong>despu&eacute;s</strong> de agrupar. Permite condiciones sobre <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, etc.</p>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Filtrar grupos por suma de recaudaci&oacute;n</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT SUM(p.Recaudacion) AS Total,
+       g.Genero
+FROM Pelicula p
+INNER JOIN Genero g ON p.GeneroID = g.GeneroID
+GROUP BY g.Genero
+HAVING SUM(p.Recaudacion) > 0
+   AND SUM(p.Recaudacion) < 5000000000;</code></pre>
+      <p class="note-line">Solo se muestran los g&eacute;neros cuya suma de recaudaci&oacute;n est&aacute; dentro del rango indicado.</p>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Otro ejemplo: g&eacute;neros con m&aacute;s de 5 pel&iacute;culas</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT g.Genero,
+       COUNT(p.PeliculaID) AS Cantidad
+FROM Pelicula p
+INNER JOIN Genero g ON p.GeneroID = g.GeneroID
+GROUP BY g.Genero
+HAVING COUNT(p.PeliculaID) > 5;</code></pre>
+    </div>
+  </div>
+
+  <div class="tip danger">
+    <span class="tip-icon"></span>
+    <div>No pod&eacute;s escribir <code>WHERE SUM(Recaudacion) &gt; 1000</code>. Las condiciones sobre funciones de agrupaci&oacute;n van en <code>HAVING</code>, no en <code>WHERE</code>.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-resumen">
+  <h2>Resumen de la clase</h2>
+  <p class="section-intro">Esta tabla resume las piezas principales para consultas con agregaciones. Conviene tenerla a mano al practicar en SQL Server.</p>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Elemento</th>
+        <th>Uso principal</th>
+        <th>Ejemplo corto</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>COUNT</code></td>
+        <td>Contar filas o valores no nulos</td>
+        <td><code>COUNT(*) FROM Pelicula</code></td>
+      </tr>
+      <tr>
+        <td><code>MIN / MAX</code></td>
+        <td>Obtener el valor m&iacute;nimo o m&aacute;ximo</td>
+        <td><code>MAX(Recaudacion)</code></td>
+      </tr>
+      <tr>
+        <td><code>SUM / AVG</code></td>
+        <td>Sumar o promediar columnas num&eacute;ricas</td>
+        <td><code>AVG(Presupuesto)</code></td>
+      </tr>
+      <tr>
+        <td><code>GROUP BY</code></td>
+        <td>Agrupar resultados por una o m&aacute;s columnas</td>
+        <td><code>GROUP BY GeneroID</code></td>
+      </tr>
+      <tr>
+        <td><code>HAVING</code></td>
+        <td>Filtrar grupos seg&uacute;n agregaciones</td>
+        <td><code>HAVING COUNT(*) &gt; 5</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip success">
+    <span class="tip-icon"></span>
+    <div>Orden mental &uacute;til: primero defin&iacute;s qu&eacute; quer&eacute;s resumir, despu&eacute;s por qu&eacute; columna agrupar y, si hace falta, qu&eacute; grupos filtrar con <code>HAVING</code>.</div>
+  </div>
+
+  <p style="margin-top:18px"><a class="inline-link" href="index.html">Volver al inicio</a></p>
+</div>
+
+<div class="section" id="tab-quiz">
+  <h2>Quiz de Repaso</h2>
+  <p class="section-intro">Este quiz repasa funciones de agrupaci&oacute;n, <code>GROUP BY</code> y la diferencia entre <code>WHERE</code> y <code>HAVING</code>. La idea es comprobar si ya qued&oacute; clara la l&oacute;gica de resumir datos en SQL Server.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div class="score-num" id="score-num">0/0</div>
+    <div class="score-label" id="score-label">Resultado final</div>
+    <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+</div>
+
+<footer>
+  <div class="container">
+    Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/clase-09-funciones-agrupacion.js"></script>
+
+</body>
+</html>
