@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vistas en SQL Server</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-10-vistas-sql-server.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNzk1ODk0" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-09-funciones-agrupacion.html">&larr; Clase anterior</a>
+
+<div class="container">
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server &middot; Clase interactiva</div>
+  <h1>Vistas en SQL Server<br><em>consultas guardadas</em></h1>
+  <p class="subtitle">En esta clase vemos qu&eacute; es una vista, para qu&eacute; sirve, c&oacute;mo se crea con <code>CREATE VIEW</code>, c&oacute;mo se consulta y c&oacute;mo puede modificarse con <code>ALTER VIEW</code>.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:14%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('intro',0)">General</button>
+  <button class="nav-btn" onclick="showTab('razones',1)">Usos</button>
+  <button class="nav-btn" onclick="showTab('crear',2)">Crear</button>
+  <button class="nav-btn" onclick="showTab('usar',3)">Usar</button>
+  <button class="nav-btn" onclick="showTab('modificar',4)">Modificar</button>
+  <button class="nav-btn" onclick="showTab('resumen',5)">Resumen</button>
+  <button class="nav-btn" onclick="showTab('quiz',6)">Quiz</button>
+</nav>
+
+<div class="section active" id="tab-intro">
+  <h2>Concepto general</h2>
+  <p class="section-intro">Una vista es una tabla virtual: no guarda datos propios, sino que muestra datos provenientes de una o m&aacute;s tablas f&iacute;sicas de la base de datos.</p>
+
+  <div class="concepto">
+    Podemos pensar una vista como una <strong>consulta guardada</strong>. En lugar de escribir una consulta completa cada vez, se crea una vista con esa consulta y luego se la utiliza como si fuera una tabla para leer informaci&oacute;n.
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h3>Tabla f&iacute;sica</h3>
+      <p class="note-line" style="margin-top:0">Almacena filas reales dentro de la base de datos. Es el origen de los datos.</p>
+    </div>
+    <div class="compare-card">
+      <h3>Vista</h3>
+      <p class="note-line" style="margin-top:0">Guarda una consulta y muestra datos obtenidos desde tablas. Su resultado se actualiza al consultarla.</p>
+    </div>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>Si cambian los datos de las tablas originales, la vista reflejar&aacute; esos cambios la pr&oacute;xima vez que se consulte.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-razones">
+  <h2>Razones para utilizar vistas</h2>
+  <p class="section-intro">Las vistas ayudan a simplificar el trabajo con consultas repetidas o complejas, y tambi&eacute;n pueden mejorar la forma en que se presenta la informaci&oacute;n a distintos usuarios.</p>
+
+  <div class="intro-grid">
+    <article class="intro-card" style="--card-color:#4ade80">
+      <div class="card-num">01</div>
+      <h3>Simplificar consultas</h3>
+      <p>Encapsulan consultas <code>SELECT</code> complejas en un objeto reutilizable y reducen errores al reescribir c&oacute;digo.</p>
+    </article>
+    <article class="intro-card" style="--card-color:#60a5fa">
+      <div class="card-num">02</div>
+      <h3>Ocultar complejidad</h3>
+      <p>Presentan una versi&oacute;n m&aacute;s clara de los datos sin exponer toda la estructura interna de las tablas.</p>
+    </article>
+    <article class="intro-card" style="--card-color:#f59e0b">
+      <div class="card-num">03</div>
+      <h3>Proporcionar seguridad</h3>
+      <p>Permiten mostrar solo ciertas columnas o filas, evitando que algunos usuarios accedan a datos sensibles.</p>
+    </article>
+    <article class="intro-card" style="--card-color:#2dd4bf">
+      <div class="card-num">04</div>
+      <h3>Reutilizar l&oacute;gica</h3>
+      <p>Evitan repetir consultas con joins, filtros o c&aacute;lculos cada vez que se necesita el mismo resultado.</p>
+    </article>
+  </div>
+
+  <div class="tip warn">
+    <span class="tip-icon"></span>
+    <div>Una vista mejora la organizaci&oacute;n de las consultas, pero no reemplaza el buen dise&ntilde;o de tablas ni el an&aacute;lisis de rendimiento de cada caso.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-crear">
+  <h2>C&oacute;mo crear una vista</h2>
+  <p class="section-intro">Para crear una vista se utiliza la sentencia <code>CREATE VIEW</code>, seguida del nombre de la vista, la palabra <code>AS</code> y la consulta <code>SELECT</code> que formar&aacute; su resultado.</p>
+
+  <div class="content-card">
+    <div class="content-card-header">Sintaxis general</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>CREATE VIEW v_NombreVista
+AS
+SELECT
+    T1.Columna,
+    SUM(T2.Columna) AS Total
+FROM Tabla1 T1
+INNER JOIN Tabla2 T2 ON T2.ID = T1.ID
+GROUP BY T1.Columna;</code></pre>
+      <p class="note-line">El nombre de la vista suele comenzar con <code>v_</code> para reconocerla r&aacute;pidamente dentro de la base de datos.</p>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Ejemplo: vendedores activos</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>CREATE VIEW v_VendedoresActivos
+AS
+SELECT
+    v.VendedorId AS Legajo,
+    CONCAT(v.Apellido, ', ', v.Nombre) AS Vendedor,
+    v.CUIL,
+    v.Telefono,
+    v.EMail,
+    v.Direccion,
+    c.Ciudad,
+    v.CPostal
+FROM Vendedores v
+INNER JOIN Ciudades c ON c.CiudadId = v.CiudadId
+WHERE v.Baja = 0;</code></pre>
+      <p class="note-line">Esta vista muestra solo vendedores activos y presenta el nombre completo del vendedor en una columna m&aacute;s legible.</p>
+    </div>
+  </div>
+
+  <figure class="lesson-image wide" onclick="openImageModal('assets/vistas_sql/image4.png','Resumen visual de vistas en SQL Server')">
+    <img src="assets/vistas_sql/image4.png" alt="Resumen visual para crear, usar y modificar vistas en SQL Server">
+    <figcaption>Resumen visual de los comandos principales para trabajar con vistas.</figcaption>
+  </figure>
+</div>
+
+<div class="section" id="tab-usar">
+  <h2>C&oacute;mo utilizar una vista</h2>
+  <p class="section-intro">Una vez creada, una vista se consulta igual que una tabla. Se puede usar en un <code>SELECT</code> simple o combinarla con otras tablas mediante <code>JOIN</code>.</p>
+
+  <div class="content-card">
+    <div class="content-card-header">Consulta simple</div>
+    <div class="content-card-body">
+      <pre class="sql-block compact"><code>SELECT *
+FROM v_VendedoresActivos;</code></pre>
+      <p class="note-line">El resultado muestra las columnas definidas dentro de la vista, no necesariamente todas las columnas de las tablas originales.</p>
+    </div>
+  </div>
+
+  <figure class="lesson-image" onclick="openImageModal('assets/vistas_sql/image1.jpg','Resultado de la vista v_VendedoresActivos')">
+    <img src="assets/vistas_sql/image1.jpg" alt="Resultado de consultar la vista v_VendedoresActivos">
+    <figcaption>Resultado de consultar la vista <code>v_VendedoresActivos</code>.</figcaption>
+  </figure>
+
+  <div class="content-card">
+    <div class="content-card-header">Usar una vista con JOIN</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT
+    v.Fecha,
+    v.Numero,
+    v.Importe,
+    v2.Vendedor
+FROM Ventas v
+INNER JOIN v_VendedoresActivos v2
+    ON v2.Legajo = v.VendedorId;</code></pre>
+      <p class="note-line">En este ejemplo, la vista se usa como origen de datos para traer el nombre legible del vendedor en una consulta sobre ventas.</p>
+    </div>
+  </div>
+
+  <figure class="lesson-image" onclick="openImageModal('assets/vistas_sql/image2.jpg','Resultado de una consulta con JOIN usando la vista')">
+    <img src="assets/vistas_sql/image2.jpg" alt="Resultado de una consulta con JOIN usando una vista">
+    <figcaption>Resultado de combinar ventas con la vista de vendedores activos.</figcaption>
+  </figure>
+</div>
+
+<div class="section" id="tab-modificar">
+  <h2>Modificar y ubicar vistas</h2>
+  <p class="section-intro">Las vistas creadas se almacenan dentro de la base de datos, en la carpeta <strong>Vistas</strong> o <strong>Views</strong>. Si necesitamos cambiar su definici&oacute;n, usamos <code>ALTER VIEW</code>.</p>
+
+  <div class="content-card">
+    <div class="content-card-header">Modificar una vista existente</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>ALTER VIEW v_VendedoresActivos
+AS
+SELECT
+    v.VendedorId AS Legajo,
+    CONCAT(v.Apellido, ', ', v.Nombre) AS Vendedor,
+    v.CUIL,
+    v.NroDoc,
+    v.Telefono,
+    v.EMail,
+    v.Direccion,
+    c.Ciudad,
+    v.CPostal
+FROM Vendedores v
+INNER JOIN Ciudades c ON c.CiudadId = v.CiudadId
+WHERE v.Baja = 0;</code></pre>
+      <p class="note-line">En este caso se agrega la columna <code>NroDoc</code> a la vista, manteniendo el resto de la consulta.</p>
+    </div>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h3><code>CREATE VIEW</code></h3>
+      <p class="note-line" style="margin-top:0">Se usa para crear una vista nueva en la base de datos.</p>
+    </div>
+    <div class="compare-card">
+      <h3><code>ALTER VIEW</code></h3>
+      <p class="note-line" style="margin-top:0">Se usa para reemplazar la definici&oacute;n de una vista ya existente.</p>
+    </div>
+  </div>
+
+  <figure class="lesson-image" onclick="openImageModal('assets/vistas_sql/image3.jpg','Carpeta Views en SQL Server Management Studio')">
+    <img src="assets/vistas_sql/image3.jpg" alt="Carpeta Views en SQL Server Management Studio">
+    <figcaption>En SQL Server Management Studio, las vistas aparecen dentro de la carpeta <strong>Views</strong>.</figcaption>
+  </figure>
+
+  <div class="tip danger">
+    <span class="tip-icon"></span>
+    <div>Para esta clase, trabajamos las vistas como herramientas de consulta. Si necesit&aacute;s insertar, modificar o eliminar datos, hacelo directamente sobre las tablas originales.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-resumen">
+  <h2>Resumen de la clase</h2>
+  <p class="section-intro">Las vistas sirven para guardar consultas y reutilizarlas de forma clara. Esta tabla resume los puntos principales.</p>
+
+  <table class="big-table">
+    <thead>
+      <tr>
+        <th>Elemento</th>
+        <th>Uso principal</th>
+        <th>Ejemplo corto</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Vista</td>
+        <td>Tabla virtual basada en una consulta guardada.</td>
+        <td><code>v_VendedoresActivos</code></td>
+      </tr>
+      <tr>
+        <td><code>CREATE VIEW</code></td>
+        <td>Crea una vista nueva.</td>
+        <td><code>CREATE VIEW v_Nombre AS SELECT...</code></td>
+      </tr>
+      <tr>
+        <td><code>SELECT</code></td>
+        <td>Permite consultar la vista como si fuera una tabla.</td>
+        <td><code>SELECT * FROM v_Nombre;</code></td>
+      </tr>
+      <tr>
+        <td><code>JOIN</code></td>
+        <td>Permite combinar una vista con otras tablas o vistas.</td>
+        <td><code>INNER JOIN v_Vista v</code></td>
+      </tr>
+      <tr>
+        <td><code>ALTER VIEW</code></td>
+        <td>Modifica la definici&oacute;n de una vista existente.</td>
+        <td><code>ALTER VIEW v_Nombre AS SELECT...</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip success">
+    <span class="tip-icon"></span>
+    <div>Idea central: una vista no guarda los datos, guarda la forma de consultarlos. Por eso simplifica consultas repetidas y muestra siempre informaci&oacute;n actualizada desde las tablas base.</div>
+  </div>
+
+  <p style="margin-top:18px"><a class="inline-link" href="index.html">Volver al inicio</a></p>
+</div>
+
+<div class="section" id="tab-quiz">
+  <h2>Quiz de Repaso</h2>
+  <p class="section-intro">Este quiz repasa el concepto de vista, su sintaxis b&aacute;sica, el uso con <code>SELECT</code> y la diferencia entre crear y modificar una vista.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div class="score-num" id="score-num">0/0</div>
+    <div class="score-label" id="score-label">Resultado final</div>
+    <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+</div>
+
+<div class="image-modal" id="image-modal" aria-hidden="true">
+  <div class="image-modal-dialog">
+    <div class="image-modal-top">
+      <div class="image-modal-title" id="image-modal-title">Imagen</div>
+      <button class="image-modal-close" type="button" onclick="closeImageModal()" aria-label="Cerrar imagen">&times;</button>
+    </div>
+    <div class="image-modal-body">
+      <img id="image-modal-img" src="" alt="">
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br>
+    <span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span>
+  </div>
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/clase-10-vistas-sql-server.js"></script>
+
+</body>
+</html>
