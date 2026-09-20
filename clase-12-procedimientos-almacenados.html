@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Procedimientos almacenados en SQL Server</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-12-procedimientos-almacenados.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNzk1ODk0" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-11-funciones-usuario-sql-server.html">&larr; Clase anterior</a>
+
+<div class="container">
+<header>
+  <div class="header-top"><a class="back-link" href="index.html">&larr; Volver al inicio</a></div>
+  <div class="badge">SQL Server &middot; Clase interactiva</div>
+  <h1>Procedimientos<br><em>almacenados</em></h1>
+  <p class="subtitle">En esta clase vemos c&oacute;mo agrupar instrucciones SQL en procedimientos almacenados para reutilizar operaciones, recibir par&aacute;metros y organizar la l&oacute;gica de una base de datos.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:14%"></div></div>
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('intro',0)">General</button>
+  <button class="nav-btn" onclick="showTab('ventajas',1)">Ventajas</button>
+  <button class="nav-btn" onclick="showTab('sintaxis',2)">Sintaxis</button>
+  <button class="nav-btn" onclick="showTab('ejecutar',3)">Ejecutar</button>
+  <button class="nav-btn" onclick="showTab('ejemplo',4)">Ejemplo</button>
+  <button class="nav-btn" onclick="showTab('resumen',5)">Resumen</button>
+  <button class="nav-btn" onclick="showTab('quiz',6)">Quiz</button>
+</nav>
+
+<div class="section active" id="tab-intro">
+  <h2>Concepto general</h2>
+  <p class="section-intro">Un procedimiento almacenado o <em>stored procedure</em> es un grupo de una o varias instrucciones SQL que se guarda dentro de la base de datos para poder ejecutarlo cuando se necesite.</p>
+  <div class="concepto">Podemos pensarlo como una tarea con nombre: en lugar de repetir una consulta o una operaci&oacute;n completa, se define una vez dentro de un procedimiento y luego se llama para ejecutarla.</div>
+  <div class="compare-grid">
+    <div class="compare-card"><h3>Puede recibir datos</h3><p class="note-line" style="margin-top:0">Acepta par&aacute;metros de entrada para adaptar su ejecuci&oacute;n a cada caso.</p></div>
+    <div class="compare-card"><h3>Puede realizar operaciones</h3><p class="note-line" style="margin-top:0">Dentro puede contener consultas, inserciones, modificaciones, eliminaciones u otras llamadas.</p></div>
+    <div class="compare-card"><h3>Puede devolver resultados</h3><p class="note-line" style="margin-top:0">Puede devolver valores mediante par&aacute;metros de salida o un estado de ejecuci&oacute;n.</p></div>
+    <div class="compare-card"><h3>Se guarda en la base</h3><p class="note-line" style="margin-top:0">Queda disponible en SQL Server para quienes tengan permiso de ejecutarlo.</p></div>
+  </div>
+  <div class="tip info"><span class="tip-icon"></span><div>Los procedimientos almacenados ayudan a separar la l&oacute;gica de datos de la capa de presentaci&oacute;n de una aplicaci&oacute;n.</div></div>
+</div>
+
+<div class="section" id="tab-ventajas">
+  <h2>Ventajas de utilizarlos</h2>
+  <p class="section-intro">Son una herramienta muy utilizada porque concentran tareas habituales o complejas en objetos reutilizables dentro del servidor.</p>
+  <div class="intro-grid">
+    <article class="intro-card" style="--card-color:#4ade80"><div class="card-num">01</div><h3>Rendimiento</h3><p>Su l&oacute;gica se almacena en el servidor y puede reutilizar el plan de ejecuci&oacute;n, reduciendo trabajo repetido.</p></article>
+    <article class="intro-card" style="--card-color:#60a5fa"><div class="card-num">02</div><h3>Seguridad</h3><p>Se pueden otorgar permisos sobre el procedimiento y controlar qui&eacute;n lo ejecuta.</p></article>
+    <article class="intro-card" style="--card-color:#a78bfa"><div class="card-num">03</div><h3>Reutilizaci&oacute;n</h3><p>Evitan duplicar una misma operaci&oacute;n en diferentes partes de una aplicaci&oacute;n.</p></article>
+    <article class="intro-card" style="--card-color:#f59e0b"><div class="card-num">04</div><h3>Mantenimiento</h3><p>La l&oacute;gica queda centralizada, documentable y m&aacute;s simple de modificar.</p></article>
+    <article class="intro-card" style="--card-color:#2dd4bf"><div class="card-num">05</div><h3>Transacciones</h3><p>Pueden incluir <code>BEGIN TRANSACTION</code>, <code>COMMIT</code> y <code>ROLLBACK</code> para operaciones at&oacute;micas.</p></article>
+    <article class="intro-card" style="--card-color:#f87171"><div class="card-num">06</div><h3>Menos tr&aacute;fico</h3><p>La aplicaci&oacute;n solicita ejecutar una tarea sin enviar toda la l&oacute;gica SQL cada vez.</p></article>
+  </div>
+</div>
+
+<div class="section" id="tab-sintaxis">
+  <h2>Crear un procedimiento</h2>
+  <p class="section-intro">La sentencia <code>CREATE PROCEDURE</code> define el nombre, los par&aacute;metros opcionales y el bloque de instrucciones que se almacenar&aacute; en la base de datos.</p>
+  <div class="content-card"><div class="content-card-header">Sintaxis general</div><div class="content-card-body">
+    <pre class="sql-block"><code>CREATE PROCEDURE NombreDelProcedimiento
+    @Parametro1 TipoDeDato,
+    @Parametro2 TipoDeDato = valor_por_defecto
+AS
+BEGIN
+    -- L&oacute;gica del procedimiento
+END;</code></pre>
+  </div></div>
+  <table class="big-table"><thead><tr><th>Elemento</th><th>Descripci&oacute;n</th></tr></thead><tbody>
+    <tr><td><code>CREATE PROCEDURE</code></td><td>Indica que se est&aacute; creando un procedimiento almacenado.</td></tr>
+    <tr><td>Nombre</td><td>Identifica el procedimiento que se ejecutar&aacute; despu&eacute;s.</td></tr>
+    <tr><td>Par&aacute;metros</td><td>Son opcionales; se escriben con <code>@</code>, tipo de dato y, si hace falta, valor por defecto.</td></tr>
+    <tr><td><code>AS</code></td><td>Marca el inicio del cuerpo del procedimiento.</td></tr>
+    <tr><td><code>BEGIN ... END</code></td><td>Delimita las instrucciones SQL que componen su l&oacute;gica.</td></tr>
+  </tbody></table>
+  <div class="tip warn"><span class="tip-icon"></span><div>Dentro de <code>BEGIN</code> y <code>END</code> se pueden incluir <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code> y otras instrucciones necesarias.</div></div>
+</div>
+
+<div class="section" id="tab-ejecutar">
+  <h2>Ejecutar un procedimiento</h2>
+  <p class="section-intro">Luego de crearlo en una ventana de consulta de SSMS, se llama con <code>EXEC</code> o <code>EXECUTE</code>. Si recibe par&aacute;metros, se les asignan los valores al invocarlo.</p>
+  <div class="content-card"><div class="content-card-header">Llamada con par&aacute;metros</div><div class="content-card-body">
+    <pre class="sql-block compact"><code>EXEC NombreDelProcedimiento
+    @Parametro1 = 1,
+    @Parametro2 = 'a';</code></pre>
+    <p class="note-line">Si un par&aacute;metro tiene un valor por defecto, no es obligatorio enviarlo al ejecutar el procedimiento.</p>
+  </div></div>
+  <div class="compare-grid">
+    <div class="compare-card"><h3><code>EXEC</code></h3><p class="note-line" style="margin-top:0">Forma abreviada habitual para ejecutar un procedimiento.</p></div>
+    <div class="compare-card"><h3><code>EXECUTE</code></h3><p class="note-line" style="margin-top:0">Forma completa; produce el mismo resultado que <code>EXEC</code>.</p></div>
+  </div>
+</div>
+
+<div class="section" id="tab-ejemplo">
+  <h2>Ejemplo: consultar un producto</h2>
+  <p class="section-intro">Este procedimiento recibe el identificador de un producto y devuelve su nombre, precio de venta y stock.</p>
+  <div class="content-card"><div class="content-card-header">Crear <code>sp_Producto</code></div><div class="content-card-body">
+    <pre class="sql-block"><code>CREATE PROCEDURE sp_Producto
+    @productoid INT
+AS
+BEGIN
+    SELECT
+        Producto,
+        PrecioVenta,
+        Stock
+    FROM Productos
+    WHERE ProductoId = @productoid;
+END;</code></pre>
+    <p class="note-line">El par&aacute;metro <code>@productoid</code> se utiliza en la condici&oacute;n <code>WHERE</code> para buscar el producto solicitado.</p>
+  </div></div>
+  <div class="content-card"><div class="content-card-header">Ejecutarlo</div><div class="content-card-body"><pre class="sql-block compact"><code>EXEC sp_Producto @productoid = 1;</code></pre></div></div>
+  <div class="tip success"><span class="tip-icon"></span><div>Al ejecutar el procedimiento con el identificador <code>1</code>, SQL Server devuelve la informaci&oacute;n del producto que coincide con ese valor.</div></div>
+</div>
+
+<div class="section" id="tab-resumen">
+  <h2>Resumen de la clase</h2>
+  <p class="section-intro">Un procedimiento almacenado agrupa instrucciones SQL bajo un nombre para reutilizar una tarea de la base de datos.</p>
+  <table class="big-table"><thead><tr><th>Elemento</th><th>Uso</th><th>Ejemplo</th></tr></thead><tbody>
+    <tr><td>Procedimiento almacenado</td><td>Conjunto guardado de instrucciones SQL.</td><td><code>sp_Producto</code></td></tr>
+    <tr><td><code>CREATE PROCEDURE</code></td><td>Crea el procedimiento en la base de datos.</td><td><code>CREATE PROCEDURE sp_Nombre</code></td></tr>
+    <tr><td>Par&aacute;metro</td><td>Recibe un valor de entrada al ejecutar.</td><td><code>@productoid INT</code></td></tr>
+    <tr><td><code>EXEC</code></td><td>Ejecuta un procedimiento creado.</td><td><code>EXEC sp_Producto @productoid = 1</code></td></tr>
+    <tr><td>Transacci&oacute;n</td><td>Asegura operaciones at&oacute;micas cuando se necesita.</td><td><code>BEGIN TRANSACTION</code></td></tr>
+  </tbody></table>
+  <div class="tip success"><span class="tip-icon"></span><div>Idea central: los procedimientos almacenados reducen duplicaci&oacute;n, centralizan l&oacute;gica y permiten ejecutar operaciones de forma controlada.</div></div>
+  <p style="margin-top:18px"><a class="inline-link" href="index.html">Volver al inicio</a></p>
+</div>
+
+<div class="section" id="tab-quiz">
+  <h2>Quiz de repaso</h2>
+  <p class="section-intro">Comprob&aacute; los conceptos esenciales sobre procedimientos almacenados.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none"><div class="score-num" id="score-num">0/0</div><div class="score-label" id="score-label">Resultado final</div><button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button></div>
+</div>
+</div>
+
+<footer><div class="container">Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br><span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span></div></footer>
+<script src="js/common.js"></script>
+<script src="js/clase-12-procedimientos-almacenados.js"></script>
+</body>
+</html>

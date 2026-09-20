@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Funciones definidas por el usuario en SQL Server</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/clase-11-funciones-usuario-sql-server.css">
+</head>
+<body>
+
+<a class="classroom-link" href="https://classroom.google.com/c/Nzk2NjQzNzk1ODk0" target="_blank" rel="noopener noreferrer">Ir a Classroom</a>
+<a class="lesson-nav-btn prev" href="clase-10-vistas-sql-server.html">&larr; Clase anterior</a>
+<a class="lesson-nav-btn next" href="clase-12-procedimientos-almacenados.html">Siguiente clase &rarr;</a>
+
+<div class="container">
+<header>
+  <div class="header-top">
+    <a class="back-link" href="index.html">&larr; Volver al inicio</a>
+  </div>
+  <div class="badge">SQL Server &middot; Clase interactiva</div>
+  <h1>Funciones definidas<br><em>por el usuario</em></h1>
+  <p class="subtitle">En esta clase trabajamos con funciones escalares definidas por el usuario: rutinas reutilizables que reciben par&aacute;metros, encapsulan una l&oacute;gica y devuelven un &uacute;nico valor.</p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:14%"></div></div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('intro',0)">General</button>
+  <button class="nav-btn" onclick="showTab('sintaxis',1)">Sintaxis</button>
+  <button class="nav-btn" onclick="showTab('ejemplo',2)">Ejemplo</button>
+  <button class="nav-btn" onclick="showTab('usar',3)">Usar</button>
+  <button class="nav-btn" onclick="showTab('ubicacion',4)">Ubicaci&oacute;n</button>
+  <button class="nav-btn" onclick="showTab('resumen',5)">Resumen</button>
+  <button class="nav-btn" onclick="showTab('quiz',6)">Quiz</button>
+</nav>
+
+<div class="section active" id="tab-intro">
+  <h2>Concepto general</h2>
+  <p class="section-intro">Las funciones definidas por el usuario, o <strong>UDF</strong> (<em>User-Defined Functions</em>), permiten encapsular una l&oacute;gica de negocio en un objeto reutilizable dentro de SQL Server.</p>
+
+  <div class="concepto">
+    En esta clase veremos funciones <strong>escalares</strong>: reciben cero o m&aacute;s par&aacute;metros, realizan una operaci&oacute;n y devuelven <strong>un &uacute;nico valor</strong>. Ese valor puede utilizarse dentro de una consulta como si fuera el resultado de una columna.
+  </div>
+
+  <div class="intro-grid">
+    <article class="intro-card" style="--card-color:#2dd4bf">
+      <div class="card-num">01</div>
+      <h3>Reutilizar l&oacute;gica</h3>
+      <p>Una regla o c&aacute;lculo se define una sola vez y se invoca cuando sea necesario.</p>
+    </article>
+    <article class="intro-card" style="--card-color:#60a5fa">
+      <div class="card-num">02</div>
+      <h3>Recibir par&aacute;metros</h3>
+      <p>Los datos de entrada permiten que la funci&oacute;n responda a cada caso concreto.</p>
+    </article>
+    <article class="intro-card" style="--card-color:#4ade80">
+      <div class="card-num">03</div>
+      <h3>Devolver un valor</h3>
+      <p>Una funci&oacute;n escalar retorna un solo resultado, con el tipo indicado en <code>RETURNS</code>.</p>
+    </article>
+    <article class="intro-card" style="--card-color:#a78bfa">
+      <div class="card-num">04</div>
+      <h3>Mejorar lectura</h3>
+      <p>Las consultas quedan m&aacute;s claras al reemplazar c&aacute;lculos repetidos por un nombre expresivo.</p>
+    </article>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon"></span>
+    <div>Las UDF se guardan dentro de la base de datos. Por eso pueden ser utilizadas por otras consultas y por otros usuarios que trabajen sobre esa misma base.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-sintaxis">
+  <h2>Sintaxis de una funci&oacute;n escalar</h2>
+  <p class="section-intro">Para crear una funci&oacute;n se utiliza <code>CREATE FUNCTION</code>. Despu&eacute;s se indican sus par&aacute;metros, el tipo de valor que devolver&aacute; y la l&oacute;gica necesaria para obtener ese resultado.</p>
+
+  <div class="content-card">
+    <div class="content-card-header">Estructura general</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>CREATE FUNCTION nombreFuncion (
+    @parametro1 AS TipoDeDato,
+    @parametro2 AS TipoDeDato
+)
+RETURNS TipoDeDato
+AS
+BEGIN
+    -- instrucciones
+    RETURN valor
+END;</code></pre>
+    </div>
+  </div>
+
+  <table class="big-table">
+    <thead><tr><th>Parte</th><th>Para qu&eacute; sirve</th></tr></thead>
+    <tbody>
+      <tr><td><code>CREATE FUNCTION</code></td><td>Inicia la creaci&oacute;n de la funci&oacute;n y le asigna un nombre.</td></tr>
+      <tr><td>Par&aacute;metros</td><td>Reciben los datos de entrada que necesita la l&oacute;gica.</td></tr>
+      <tr><td><code>RETURNS</code></td><td>Indica el tipo de dato del &uacute;nico resultado que devolver&aacute; la funci&oacute;n.</td></tr>
+      <tr><td><code>AS BEGIN ... END</code></td><td>Delimita las instrucciones que se ejecutar&aacute;n.</td></tr>
+      <tr><td><code>RETURN</code></td><td>Entrega el valor final calculado.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip warn">
+    <span class="tip-icon"></span>
+    <div>El tipo indicado en <code>RETURNS</code> debe ser compatible con el valor enviado en <code>RETURN</code>.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-ejemplo">
+  <h2>Ejemplo: total de ventas de un cliente</h2>
+  <p class="section-intro">La siguiente funci&oacute;n recibe el identificador de un cliente y devuelve la suma de los importes de todas sus ventas.</p>
+
+  <div class="content-card">
+    <div class="content-card-header">Funci&oacute;n <code>uf_SumaVentas</code></div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>CREATE FUNCTION uf_SumaVentas(@clienteid AS INT)
+RETURNS NUMERIC(18,2)
+AS
+BEGIN
+    DECLARE @total AS NUMERIC(18,2);
+
+    SELECT @total = SUM(Importe)
+    FROM Ventas
+    WHERE ClienteId = @clienteid;
+
+    RETURN @total;
+END;</code></pre>
+      <p class="note-line">La variable <code>@total</code> guarda el resultado de <code>SUM(Importe)</code>; al finalizar, ese mismo valor es retornado por la funci&oacute;n.</p>
+    </div>
+  </div>
+
+  <div class="step-list">
+    <div><span class="step-num">1</span><strong>Entrada:</strong> la funci&oacute;n recibe <code>@clienteid</code>.</div>
+    <div><span class="step-num">2</span><strong>C&aacute;lculo:</strong> busca las ventas de ese cliente y suma sus importes.</div>
+    <div><span class="step-num">3</span><strong>Salida:</strong> devuelve el total obtenido en <code>@total</code>.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-usar">
+  <h2>Llamar y utilizar una funci&oacute;n</h2>
+  <p class="section-intro">Para invocar una funci&oacute;n se escribe su propietario, normalmente <code>dbo</code>, seguido del nombre y los valores de sus par&aacute;metros entre par&eacute;ntesis.</p>
+
+  <div class="content-card">
+    <div class="content-card-header">Llamada directa</div>
+    <div class="content-card-body">
+      <pre class="sql-block compact"><code>SELECT dbo.uf_SumaVentas(799);</code></pre>
+      <p class="note-line">El valor <code>799</code> se pasa como argumento para el par&aacute;metro <code>@clienteid</code>.</p>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">Usarla como una columna dentro de una consulta</div>
+    <div class="content-card-body">
+      <pre class="sql-block"><code>SELECT
+    RazonSocial,
+    NroDoc,
+    Direccion,
+    dbo.uf_SumaVentas(ClienteId) AS ResultadoFuncion
+FROM Clientes;</code></pre>
+      <p class="note-line">La funci&oacute;n se eval&uacute;a para cada cliente y agrega una columna con su total de ventas.</p>
+    </div>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-card"><h3>Consulta directa</h3><p class="note-line" style="margin-top:0">Devuelve un resultado puntual para un valor espec&iacute;fico.</p></div>
+    <div class="compare-card"><h3>Dentro de <code>SELECT</code></h3><p class="note-line" style="margin-top:0">Permite incluir el resultado como parte de cada fila de una consulta.</p></div>
+  </div>
+</div>
+
+<div class="section" id="tab-ubicacion">
+  <h2>&iquest;D&oacute;nde se encuentran?</h2>
+  <p class="section-intro">Las funciones definidas por el usuario quedan almacenadas dentro de la base de datos. En SQL Server Management Studio se pueden localizar desde el Explorador de objetos.</p>
+
+  <div class="content-card">
+    <div class="content-card-header">Ruta en SQL Server Management Studio</div>
+    <div class="content-card-body">
+      <pre class="sql-block compact"><code>Base de datos
+└── Programmability / Programaci&oacute;n
+    └── Functions / Funciones
+        └── Scalar-valued Functions / Funciones escalares</code></pre>
+      <p class="note-line">Al hacer clic derecho sobre una funci&oacute;n y elegir <strong>Modificar</strong>, SQL Server abre su definici&oacute;n en el editor para poder revisarla o cambiarla.</p>
+    </div>
+  </div>
+
+  <div class="tip success">
+    <span class="tip-icon"></span>
+    <div>Usar un prefijo como <code>uf_</code> ayuda a reconocer r&aacute;pidamente que un objeto es una funci&oacute;n creada por el usuario.</div>
+  </div>
+</div>
+
+<div class="section" id="tab-resumen">
+  <h2>Resumen de la clase</h2>
+  <p class="section-intro">Las funciones escalares encapsulan una operaci&oacute;n y devuelven un valor para reutilizarlo en consultas.</p>
+  <table class="big-table">
+    <thead><tr><th>Elemento</th><th>Idea principal</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td>UDF escalar</td><td>Rutina definida por el usuario que devuelve un &uacute;nico valor.</td><td><code>dbo.uf_SumaVentas(799)</code></td></tr>
+      <tr><td><code>CREATE FUNCTION</code></td><td>Crea la funci&oacute;n en la base de datos.</td><td><code>CREATE FUNCTION uf_Nombre...</code></td></tr>
+      <tr><td>Par&aacute;metros</td><td>Reciben los datos necesarios para el c&aacute;lculo.</td><td><code>@clienteid AS INT</code></td></tr>
+      <tr><td><code>RETURNS</code></td><td>Define el tipo de resultado.</td><td><code>RETURNS NUMERIC(18,2)</code></td></tr>
+      <tr><td><code>RETURN</code></td><td>Devuelve el valor final de la funci&oacute;n.</td><td><code>RETURN @total</code></td></tr>
+    </tbody>
+  </table>
+  <div class="tip success"><span class="tip-icon"></span><div>Idea central: una funci&oacute;n escalar permite dar nombre a una l&oacute;gica reutilizable y usar su resultado directamente en una consulta.</div></div>
+  <p style="margin-top:18px"><a class="inline-link" href="index.html">Volver al inicio</a></p>
+</div>
+
+<div class="section" id="tab-quiz">
+  <h2>Quiz de repaso</h2>
+  <p class="section-intro">Comprob&aacute; los conceptos principales sobre funciones escalares definidas por el usuario.</p>
+  <div id="quiz-root"></div>
+  <div class="quiz-score" id="quiz-score" style="display:none">
+    <div class="score-num" id="score-num">0/0</div>
+    <div class="score-label" id="score-label">Resultado final</div>
+    <button class="btn" type="button" onclick="resetQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+</div>
+
+<footer><div class="container">Bases de Datos &middot; 2do. A&ntilde;o &middot; Tecnicatura Superior en An&aacute;lisis, Desarrollo y Programaci&oacute;n de Aplicaciones<br><span style="color:var(--text3)">Instituto Superior de Formaci&oacute;n Docente y T&eacute;cnica N&deg; 43 &middot; Lobos, Buenos Aires</span></div></footer>
+
+<script src="js/common.js"></script>
+<script src="js/clase-11-funciones-usuario-sql-server.js"></script>
+</body>
+</html>
